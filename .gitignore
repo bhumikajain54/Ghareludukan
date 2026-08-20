@@ -27,7 +27,3 @@ dist-ssr
 .env
 .env.*
 !.env.example
-
-# Gemini / IDE cache
-.gemini/
-.agents/
