@@ -30,9 +30,24 @@ export default function SellerApp({
   darkMode = false,
   onToggleTheme,
 }) {
-  const [view, setView] = useState("dashboard");
+  const [view, setView] = useState(() => {
+    try {
+      return localStorage.getItem("ghareludukan_seller_view") || "dashboard";
+    } catch (e) {
+      return "dashboard";
+    }
+  });
   const [prevView, setPrevView] = useState(null);
-  const [shopOnline, setShopOnline] = useState(true);
+  
+  const [shopOnline, setShopOnline] = useState(() => {
+    try {
+      const saved = localStorage.getItem("ghareludukan_seller_shop_online");
+      return saved !== null ? saved === "true" : true;
+    } catch (e) {
+      return true;
+    }
+  });
+
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   
   // Single Source of Truth for Seller Notifications with persistence
@@ -58,8 +73,60 @@ export default function SellerApp({
     }
   }, [notifications]);
 
-  const [openOrderId, setOpenOrderId] = useState(null);
-  const [editProductId, setEditProductId] = useState(null);
+  // Sync view to localStorage
+  useEffect(() => {
+    try {
+      localStorage.setItem("ghareludukan_seller_view", view);
+    } catch (e) {
+      console.error("Failed to persist seller view:", e);
+    }
+  }, [view]);
+
+  // Sync shopOnline to localStorage
+  useEffect(() => {
+    try {
+      localStorage.setItem("ghareludukan_seller_shop_online", shopOnline ? "true" : "false");
+    } catch (e) {
+      console.error("Failed to persist shop online status:", e);
+    }
+  }, [shopOnline]);
+
+  const [openOrderId, setOpenOrderId] = useState(() => {
+    try {
+      return localStorage.getItem("ghareludukan_seller_order_id") || null;
+    } catch (e) {
+      return null;
+    }
+  });
+
+  const [editProductId, setEditProductId] = useState(() => {
+    try {
+      return localStorage.getItem("ghareludukan_seller_edit_product_id") || null;
+    } catch (e) {
+      return null;
+    }
+  });
+
+  // Sync order/product selections
+  useEffect(() => {
+    try {
+      if (openOrderId) {
+        localStorage.setItem("ghareludukan_seller_order_id", openOrderId);
+      } else {
+        localStorage.removeItem("ghareludukan_seller_order_id");
+      }
+    } catch (e) {}
+  }, [openOrderId]);
+
+  useEffect(() => {
+    try {
+      if (editProductId) {
+        localStorage.setItem("ghareludukan_seller_edit_product_id", editProductId);
+      } else {
+        localStorage.removeItem("ghareludukan_seller_edit_product_id");
+      }
+    } catch (e) {}
+  }, [editProductId]);
 
   // Derived Dynamic Counters
   const unreadNotifs = notifications.filter((n) => !n.isRead && n.unread !== false).length;

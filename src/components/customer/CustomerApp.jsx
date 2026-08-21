@@ -37,10 +37,28 @@ export default function CustomerApp({
   darkMode = false,
   onToggleTheme,
 }) {
-  const [view, setView] = useState("home");
+  const [view, setView] = useState(() => {
+    try {
+      return localStorage.getItem("ghareludukan_customer_view") || "home";
+    } catch (e) {
+      return "home";
+    }
+  });
   const [prevView, setPrevView] = useState(null);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const [cart, setCart] = useState(INITIAL_CART);
+  
+  const [cart, setCart] = useState(() => {
+    try {
+      const saved = localStorage.getItem("ghareludukan_cart");
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed)) return parsed;
+      }
+    } catch (e) {
+      console.error("Failed to load cart from storage:", e);
+    }
+    return INITIAL_CART;
+  });
   
   // Single Source of Truth for Dynamic Notifications with persistence
   const [notifications, setNotifications] = useState(() => {
@@ -68,10 +86,79 @@ export default function CustomerApp({
     }
   }, [notifications]);
 
-  // Active view payload states
-  const [selectedShopId, setSelectedShopId] = useState(null);
-  const [selectedProductId, setSelectedProductId] = useState(null);
-  const [selectedOrderId, setSelectedOrderId] = useState(null);
+  // Sync view to localStorage
+  useEffect(() => {
+    try {
+      localStorage.setItem("ghareludukan_customer_view", view);
+    } catch (e) {
+      console.error("Failed to persist customer view:", e);
+    }
+  }, [view]);
+
+  // Sync cart to localStorage
+  useEffect(() => {
+    try {
+      localStorage.setItem("ghareludukan_cart", JSON.stringify(cart));
+    } catch (e) {
+      console.error("Failed to persist cart:", e);
+    }
+  }, [cart]);
+
+  // Active view payload states with persistence
+  const [selectedShopId, setSelectedShopId] = useState(() => {
+    try {
+      return localStorage.getItem("ghareludukan_customer_shop_id") || null;
+    } catch (e) {
+      return null;
+    }
+  });
+
+  const [selectedProductId, setSelectedProductId] = useState(() => {
+    try {
+      return localStorage.getItem("ghareludukan_customer_product_id") || null;
+    } catch (e) {
+      return null;
+    }
+  });
+
+  const [selectedOrderId, setSelectedOrderId] = useState(() => {
+    try {
+      return localStorage.getItem("ghareludukan_customer_order_id") || null;
+    } catch (e) {
+      return null;
+    }
+  });
+
+  // Sync active view payloads
+  useEffect(() => {
+    try {
+      if (selectedShopId) {
+        localStorage.setItem("ghareludukan_customer_shop_id", selectedShopId);
+      } else {
+        localStorage.removeItem("ghareludukan_customer_shop_id");
+      }
+    } catch (e) {}
+  }, [selectedShopId]);
+
+  useEffect(() => {
+    try {
+      if (selectedProductId) {
+        localStorage.setItem("ghareludukan_customer_product_id", selectedProductId);
+      } else {
+        localStorage.removeItem("ghareludukan_customer_product_id");
+      }
+    } catch (e) {}
+  }, [selectedProductId]);
+
+  useEffect(() => {
+    try {
+      if (selectedOrderId) {
+        localStorage.setItem("ghareludukan_customer_order_id", selectedOrderId);
+      } else {
+        localStorage.removeItem("ghareludukan_customer_order_id");
+      }
+    } catch (e) {}
+  }, [selectedOrderId]);
 
   // Derived Dynamic Counts
   const cartCount = cart.reduce((sum, item) => sum + item.qty, 0);
