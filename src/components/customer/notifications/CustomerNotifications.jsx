@@ -129,19 +129,19 @@ export default function CustomerNotifications({
     : "bg-cyan-500/15 text-cyan-400";
 
   return (
-    <div className="gd-rise space-y-5 max-w-2xl mx-auto">
+    <div className="gd-rise space-y-6 w-full">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between gap-4 flex-wrap">
         <div>
-          <h1 className="text-xl font-extrabold text-white">Notifications</h1>
-          <p className="text-xs text-slate-400 mt-0.5">
-            Real-time shop status updates, delivery alerts & deals
+          <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight">Notifications</h1>
+          <p className="text-xs sm:text-sm text-slate-400 mt-1">
+            Real-time shop status updates, delivery alerts, wallet credits & deals
           </p>
         </div>
         {dynamicUnread > 0 && (
           <button
             onClick={() => onMarkAllRead?.()}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-900 border border-slate-800 text-cyan-400 hover:text-cyan-300 text-xs font-bold transition-all shadow-md cursor-pointer hover:border-cyan-500/40"
+            className="flex items-center gap-2 px-4 py-2 rounded-xl bg-slate-900 border border-slate-800 text-cyan-400 hover:text-cyan-300 text-xs font-bold transition-all shadow-md cursor-pointer hover:border-cyan-500/40"
           >
             <CheckCheck size={14} />
             <span>Mark all read</span>

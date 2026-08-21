@@ -117,32 +117,32 @@ export default function SellerNotifications({
     : TYPE_COLOR.DEFAULT;
 
   return (
-    <div className="space-y-5 gd-rise max-w-2xl">
+    <div className="space-y-6 gd-rise w-full">
       {/* Header */}
-      <div className="flex items-center justify-between gap-4">
+      <div className="flex items-center justify-between gap-4 flex-wrap">
         <div>
-          <h1 className="text-2xl font-extrabold text-slate-100">Notifications</h1>
-          <p className="text-sm text-slate-500 mt-0.5">
+          <h1 className="text-2xl sm:text-3xl font-black text-slate-100 tracking-tight">Notifications</h1>
+          <p className="text-sm text-slate-400 mt-1">
             {dynamicUnread > 0
-              ? `${dynamicUnread} unread notification${dynamicUnread !== 1 ? "s" : ""}`
-              : "All caught up!"}
+              ? `You have ${dynamicUnread} unread notification${dynamicUnread !== 1 ? "s" : ""} requiring attention`
+              : "All caught up! Real-time alerts for store orders, payouts, and inventory"}
           </p>
         </div>
         {dynamicUnread > 0 && (
           <button
             onClick={() => onMarkAllRead?.()}
-            className="flex items-center gap-1.5 text-xs text-indigo-400 hover:text-indigo-300 font-semibold px-3.5 py-1.5 rounded-xl bg-slate-900 border border-slate-800 hover:border-indigo-500/40 transition-all cursor-pointer shadow-md"
+            className="flex items-center gap-2 text-xs text-indigo-400 hover:text-indigo-300 font-bold px-4 py-2 rounded-xl bg-slate-900 border border-slate-800 hover:border-indigo-500/40 transition-all cursor-pointer shadow-md"
           >
-            <CheckCheck size={14} />
-            <span>Mark all read</span>
+            <CheckCheck size={15} />
+            <span>Mark all as read</span>
           </button>
         )}
       </div>
 
       {/* Filter Chips */}
-      <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-none">
+      <div className="flex gap-2.5 overflow-x-auto pb-1 scrollbar-none">
         {[
-          { id: "ALL", label: "All" },
+          { id: "ALL", label: "All Notifications" },
           { id: "UNREAD", label: `Unread (${dynamicUnread})` },
           { id: "ORDERS", label: "Orders" },
           { id: "PAYMENTS", label: "Payments & Payouts" },
@@ -151,7 +151,7 @@ export default function SellerNotifications({
           <button
             key={f.id}
             onClick={() => setFilter(f.id)}
-            className={`px-3 py-1.5 rounded-xl text-xs font-bold border transition-all flex-shrink-0 cursor-pointer ${
+            className={`px-4 py-2 rounded-xl text-xs font-bold border transition-all flex-shrink-0 cursor-pointer ${
               filter === f.id
                 ? "bg-indigo-600/20 border-indigo-500/50 text-indigo-400 shadow-md shadow-indigo-950/40"
                 : "seller-tab-inactive bg-slate-900 border-slate-800 text-slate-400 hover:text-slate-200"
@@ -162,49 +162,69 @@ export default function SellerNotifications({
         ))}
       </div>
 
-      {/* Notification List */}
-      {filtered.length === 0 ? (
-        <div className="text-center py-16 bg-slate-900 border border-slate-800 rounded-2xl text-slate-600">
-          <Bell size={40} className="mx-auto mb-4 opacity-30" />
-          <div className="text-sm font-bold">
-            {filter === "UNREAD" ? "No unread notifications" : "No notifications"}
+      {/* Notification List (Individual Card Design) */}
+      <div className="space-y-3 w-full">
+        {filtered.length === 0 ? (
+          <div className="text-center py-16 bg-slate-900/50 border border-slate-800 rounded-2xl p-6 space-y-3 w-full">
+            <Bell size={36} className="text-slate-600 mx-auto" />
+            <div className="text-sm font-bold text-slate-400">
+              {filter === "UNREAD" ? "No unread notifications" : "No notifications"}
+            </div>
+            <p className="text-xs text-slate-600 max-w-xs mx-auto">
+              {filter === "UNREAD"
+                ? "You are all caught up! All your previous store notifications remain available under All."
+                : "You will receive real-time updates as customers place orders and payments are settled."}
+            </p>
           </div>
-          <div className="text-xs mt-1">You're all caught up with your store alerts.</div>
-        </div>
-      ) : (
-        <div className="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden shadow-lg">
-          {filtered.map((notif, i) => {
-            const isUnread = !notif.isRead && notif.unread !== false;
-            const Icon = TYPE_ICON[notif.type] || TYPE_ICON[(notif.type || "").toUpperCase()] || TYPE_ICON.DEFAULT;
-            const color = TYPE_COLOR[notif.type] || TYPE_COLOR[(notif.type || "").toUpperCase()] || TYPE_COLOR.DEFAULT;
+        ) : (
+          filtered.map((item) => {
+            const isUnread = !item.isRead && item.unread !== false;
+            const Icon = TYPE_ICON[item.type] || TYPE_ICON[(item.type || "").toUpperCase()] || TYPE_ICON.DEFAULT;
+            const badgeStyle =
+              TYPE_COLOR[item.type] ||
+              TYPE_COLOR[(item.type || "").toUpperCase()] ||
+              "bg-indigo-500/15 text-indigo-400";
 
             return (
               <div
-                key={notif.id}
-                className={`flex items-start gap-4 px-5 py-4 cursor-pointer hover:bg-slate-800/60 transition-all ticket-row-hover ${
-                  i < filtered.length - 1 ? "border-b border-slate-800/60" : ""
-                } ${isUnread ? "bg-indigo-600/10" : "opacity-80 hover:opacity-100"}`}
-                onClick={() => handleCardClick(notif)}
+                key={item.id}
+                onClick={() => handleCardClick(item)}
+                className={`p-4 sm:p-5 rounded-2xl bg-slate-900 border transition-all flex items-start gap-4 relative overflow-hidden group cursor-pointer hover:border-indigo-500/50 hover:shadow-lg ${
+                  isUnread
+                    ? "border-indigo-500/40 shadow-lg shadow-indigo-950/25 bg-slate-900"
+                    : "border-slate-800/80 opacity-80 hover:opacity-100 bg-slate-900/90"
+                }`}
               >
-                {/* Unread dot & Icon */}
-                <div className="relative flex-shrink-0 mt-0.5">
-                  <div className={`w-10 h-10 rounded-xl flex items-center justify-center border ${color}`}>
-                    <Icon size={17} />
-                  </div>
-                  {isUnread && (
-                    <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-indigo-400 rounded-full ring-2 ring-slate-900 shadow-md animate-pulse" />
-                  )}
+                {/* Visual Unread Indicator Dot */}
+                {isUnread && (
+                  <span className="absolute top-4 right-4 w-2.5 h-2.5 rounded-full bg-indigo-400 shadow-md shadow-indigo-400 animate-pulse" />
+                )}
+
+                {/* Icon Badge */}
+                <div
+                  className={`w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0 mt-0.5 group-hover:scale-105 transition-transform ${badgeStyle}`}
+                >
+                  <Icon size={19} />
                 </div>
 
-                <div className="flex-1 min-w-0">
-                  <div className={`text-sm ${isUnread ? "font-extrabold text-slate-100" : "font-semibold text-slate-300"}`}>
-                    {notif.title}
+                {/* Content */}
+                <div className="flex-1 min-w-0 pr-4">
+                  <div className="flex items-center gap-2">
+                    <h3
+                      className={`text-sm sm:text-base truncate ${
+                        isUnread
+                          ? "font-extrabold text-white"
+                          : "font-bold text-slate-300"
+                      }`}
+                    >
+                      {item.title}
+                    </h3>
                   </div>
-                  <div className={`text-xs mt-0.5 leading-relaxed ${isUnread ? "text-slate-300 font-medium" : "text-slate-400"}`}>
-                    {notif.message || notif.body}
-                  </div>
-                  <div className="text-[10px] text-slate-500 mt-1.5 font-mono flex items-center gap-2">
-                    <span>{notif.timestamp || notif.time}</span>
+                  <p className={`text-xs sm:text-sm mt-1 leading-relaxed ${isUnread ? "text-slate-300 font-medium" : "text-slate-400"}`}>
+                    {item.message || item.body}
+                  </p>
+                  <div className="text-[10px] sm:text-xs text-slate-500 font-mono mt-2.5 flex items-center gap-2">
+                    <span>{item.timestamp || item.time}</span>
                     {isUnread ? (
                       <span className="text-[9px] px-1.5 py-0.2 rounded bg-indigo-500/20 text-indigo-300 font-bold border border-indigo-500/30">
                         NEW
@@ -215,28 +235,41 @@ export default function SellerNotifications({
                   </div>
                 </div>
 
-                <div className="flex items-center gap-2 flex-shrink-0 self-center">
-                  <ChevronRight size={15} className="text-slate-600 group-hover:text-indigo-400 transition-colors" />
+                {/* Arrow icon indicating clickability */}
+                <div className="self-center p-1.5 rounded-lg text-slate-500 group-hover:text-indigo-400 group-hover:bg-slate-800 transition-colors">
+                  <ChevronRight size={18} />
                 </div>
               </div>
             );
-          })}
-        </div>
-      )}
+          })
+        )}
+      </div>
 
       {/* Notification Settings Link */}
       <button
+        type="button"
         onClick={() => onNav?.("settings")}
-        className="w-full flex items-center gap-3 p-4 rounded-2xl bg-slate-900 border border-slate-800 hover:border-slate-700 transition-all text-left cursor-pointer shadow-md"
+        className="w-full p-4 sm:p-5 rounded-2xl bg-slate-900 border border-slate-800/80 hover:border-indigo-500/50 hover:shadow-lg transition-all flex items-start sm:items-center gap-4 relative overflow-hidden group cursor-pointer text-left opacity-90 hover:opacity-100"
       >
-        <div className="w-9 h-9 rounded-xl bg-slate-800 flex items-center justify-center">
-          <Settings size={15} className="text-slate-400" />
+        {/* Settings Icon Badge */}
+        <div className="w-11 h-11 rounded-xl bg-slate-800/80 border border-slate-700/60 text-indigo-400 flex items-center justify-center flex-shrink-0 mt-0.5 sm:mt-0 group-hover:scale-105 transition-transform shadow-xs">
+          <Settings size={19} />
         </div>
-        <div className="flex-1">
-          <div className="text-sm font-semibold text-slate-200">Store Alert & Notification Preferences</div>
-          <div className="text-xs text-slate-500">Manage orders, payouts, stock threshold and review alerts</div>
+
+        {/* Text Content */}
+        <div className="flex-1 min-w-0 pr-4">
+          <h3 className="text-sm sm:text-base font-bold text-slate-200 group-hover:text-white transition-colors">
+            Store Alert & Notification Preferences
+          </h3>
+          <p className="text-xs sm:text-sm text-slate-400 mt-0.5 sm:mt-1 leading-relaxed">
+            Manage order alerts, UPI payments, low stock threshold and customer review notifications
+          </p>
         </div>
-        <ChevronRight size={14} className="text-slate-600" />
+
+        {/* Right Arrow Icon */}
+        <div className="self-center p-1.5 rounded-lg text-slate-500 group-hover:text-indigo-400 group-hover:bg-slate-800 transition-colors flex-shrink-0">
+          <ChevronRight size={18} />
+        </div>
       </button>
 
       {/* ─── Detailed Seller Notification Interactive Popup / Modal ─── */}
