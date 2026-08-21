@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { Bell, Menu, ChevronDown, Power, Store, Sun, Moon } from "lucide-react";
+import React, { useState, useRef } from "react";
+import { Bell, Menu, Power, Store, Sun, Moon } from "lucide-react";
 
 export default function SellerHeader({
   shopOnline,
@@ -12,6 +12,18 @@ export default function SellerHeader({
   onToggleTheme,
 }) {
   const [showProfileMenu, setShowProfileMenu] = useState(false);
+  const hoverTimeoutRef = useRef(null);
+
+  const handleMouseEnter = () => {
+    if (hoverTimeoutRef.current) clearTimeout(hoverTimeoutRef.current);
+    setShowProfileMenu(true);
+  };
+
+  const handleMouseLeave = () => {
+    hoverTimeoutRef.current = setTimeout(() => {
+      setShowProfileMenu(false);
+    }, 150);
+  };
 
   return (
     <header className="sticky top-0 z-30 bg-slate-900 border-b border-slate-800 flex items-center justify-between gap-3 px-4 lg:px-6 h-14">
@@ -83,7 +95,11 @@ export default function SellerHeader({
         </button>
 
         {/* Seller Profile Pill */}
-        <div className="relative">
+        <div
+          className="relative"
+          onMouseEnter={handleMouseEnter}
+          onMouseLeave={handleMouseLeave}
+        >
           <button
             onClick={() => setShowProfileMenu((p) => !p)}
             className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-slate-800/80 border border-slate-700/60 hover:border-slate-600 text-slate-200 transition-all cursor-pointer"
@@ -94,7 +110,6 @@ export default function SellerHeader({
             <span className="hidden sm:block text-sm font-bold text-slate-100 truncate max-w-[120px]">
               {sellerName}
             </span>
-            <ChevronDown size={14} className="text-slate-400" />
           </button>
 
           {showProfileMenu && (
