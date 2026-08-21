@@ -77,7 +77,7 @@ export default function CustomerSupport({ onNav }) {
   };
 
   return (
-    <div className="gd-rise space-y-5 max-w-3xl mx-auto">
+    <div className="gd-rise space-y-5 w-full">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>

@@ -118,114 +118,124 @@ export default function CustomerCart({ cart, onNav, onQtyChange, onRemove, onMov
   }
 
   return (
-    <div className="gd-rise max-w-2xl mx-auto space-y-5">
-      <h1 className="text-base font-bold text-white">My Cart <span className="text-slate-500 text-sm font-normal">({cart.length} items)</span></h1>
+    <div className="gd-rise w-full space-y-5">
+      <h1 className="text-xl font-black text-white">
+        My Cart <span className="text-slate-500 text-sm font-normal">({cart.length} items)</span>
+      </h1>
 
-      {/* ── Cart Items ──────────────────────────────── */}
-      <div className="space-y-3">
-        {cart.map((item) => (
-          <CartItem
-            key={item.productId}
-            item={item}
-            onQtyChange={onQtyChange}
-            onRemove={onRemove}
-            onMoveToWishlist={onMoveToWishlist}
-          />
-        ))}
-      </div>
-
-      {/* ── Delivery Info ───────────────────────────── */}
-      {deliveryFee === 0 ? (
-        <div className="flex items-center gap-2 px-3 py-2 rounded-xl bg-emerald-500/10 border border-emerald-500/25 text-xs font-semibold text-emerald-400">
-          🎉 Free delivery applied!
-        </div>
-      ) : (
-        <div className="flex items-center gap-2 px-3 py-2 rounded-xl bg-slate-900 border border-slate-800 text-xs text-slate-400">
-          Add <span className="text-white font-bold mx-1">{inr(300 - subtotal)}</span> more for free delivery
-        </div>
-      )}
-
-      {/* ── Coupon ──────────────────────────────────── */}
-      <div className="p-4 rounded-2xl bg-slate-900 border border-slate-800 space-y-3">
-        <div className="flex items-center gap-2 text-sm font-bold text-slate-200">
-          <Tag size={15} className="text-cyan-400" />
-          Apply Coupon
-        </div>
-        {appliedCoupon ? (
-          <div className="flex items-center justify-between px-3 py-2 rounded-xl bg-emerald-500/10 border border-emerald-500/30">
-            <div>
-              <span className="text-sm font-bold text-emerald-400 font-mono">{appliedCoupon.code}</span>
-              <span className="text-xs text-slate-400 ml-2">— {appliedCoupon.description}</span>
-            </div>
-            <button onClick={removeCoupon} className="text-xs text-slate-500 hover:text-red-400 transition-colors ml-2">
-              <X size={14} />
-            </button>
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+        {/* Left Column: Cart Items & Delivery Info */}
+        <div className="lg:col-span-7 xl:col-span-8 space-y-4">
+          {/* ── Cart Items ──────────────────────────────── */}
+          <div className="space-y-3">
+            {cart.map((item) => (
+              <CartItem
+                key={item.productId}
+                item={item}
+                onQtyChange={onQtyChange}
+                onRemove={onRemove}
+                onMoveToWishlist={onMoveToWishlist}
+              />
+            ))}
           </div>
-        ) : (
-          <div className="flex gap-2">
-            <input
-              type="text"
-              value={couponInput}
-              onChange={(e) => setCouponInput(e.target.value)}
-              onKeyDown={(e) => e.key === "Enter" && applyCoupon()}
-              placeholder="Enter coupon code"
-              className="flex-1 px-4 py-2.5 rounded-xl bg-slate-800 border border-slate-700 text-sm text-slate-100 placeholder-slate-500 outline-none focus:border-cyan-500/60 transition-all font-mono uppercase"
-            />
+
+          {/* ── Delivery Info ───────────────────────────── */}
+          {deliveryFee === 0 ? (
+            <div className="flex items-center gap-2 px-4 py-3 rounded-2xl bg-emerald-500/10 border border-emerald-500/25 text-xs font-semibold text-emerald-400">
+              🎉 Free delivery applied!
+            </div>
+          ) : (
+            <div className="flex items-center gap-2 px-4 py-3 rounded-2xl bg-slate-900 border border-slate-800 text-xs text-slate-400">
+              Add <span className="text-white font-bold mx-1">{inr(300 - subtotal)}</span> more for free delivery
+            </div>
+          )}
+        </div>
+
+        {/* Right Column: Coupon, Price Summary & Checkout CTA */}
+        <div className="lg:col-span-5 xl:col-span-4 space-y-4 sticky top-20">
+          {/* ── Coupon ──────────────────────────────────── */}
+          <div className="p-5 rounded-3xl bg-slate-900 border border-slate-800 space-y-3 shadow-xl">
+            <div className="flex items-center gap-2 text-sm font-bold text-slate-200">
+              <Tag size={15} className="text-cyan-400" />
+              Apply Coupon
+            </div>
+            {appliedCoupon ? (
+              <div className="flex items-center justify-between px-3 py-2.5 rounded-xl bg-emerald-500/10 border border-emerald-500/30">
+                <div>
+                  <span className="text-sm font-bold text-emerald-400 font-mono">{appliedCoupon.code}</span>
+                  <span className="text-xs text-slate-400 ml-2">— {appliedCoupon.description}</span>
+                </div>
+                <button onClick={removeCoupon} className="text-xs text-slate-500 hover:text-red-400 transition-colors ml-2 cursor-pointer">
+                  <X size={14} />
+                </button>
+              </div>
+            ) : (
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  value={couponInput}
+                  onChange={(e) => setCouponInput(e.target.value)}
+                  onKeyDown={(e) => e.key === "Enter" && applyCoupon()}
+                  placeholder="Enter coupon code"
+                  className="flex-1 px-4 py-2.5 rounded-xl bg-slate-800 border border-slate-700 text-sm text-slate-100 placeholder-slate-500 outline-none focus:border-cyan-500/60 transition-all font-mono uppercase"
+                />
+                <button
+                  onClick={applyCoupon}
+                  className="px-4 py-2.5 rounded-xl bg-cyan-500/20 border border-cyan-500/50 text-cyan-400 text-sm font-bold hover:bg-cyan-500/30 transition-all cursor-pointer"
+                >
+                  Apply
+                </button>
+              </div>
+            )}
+            {couponError && <div className="text-xs text-red-400 font-semibold">{couponError}</div>}
             <button
-              onClick={applyCoupon}
-              className="px-4 py-2.5 rounded-xl bg-cyan-500/20 border border-cyan-500/50 text-cyan-400 text-sm font-bold hover:bg-cyan-500/30 transition-all"
+              onClick={() => onNav("coupons")}
+              className="flex items-center gap-1 text-xs text-cyan-400 font-semibold hover:text-cyan-300 transition-colors cursor-pointer"
             >
-              Apply
+              View all available coupons <ChevronRight size={12} />
             </button>
           </div>
-        )}
-        {couponError && <div className="text-xs text-red-400 font-semibold">{couponError}</div>}
-        <button
-          onClick={() => onNav("coupons")}
-          className="flex items-center gap-1 text-xs text-cyan-400 font-semibold hover:text-cyan-300 transition-colors"
-        >
-          View all available coupons <ChevronRight size={12} />
-        </button>
-      </div>
 
-      {/* ── Price Summary ───────────────────────────── */}
-      <div className="p-4 rounded-2xl bg-slate-900 border border-slate-800 space-y-3">
-        <div className="text-sm font-bold text-slate-200">Price Details</div>
-        <div className="space-y-2">
-          {[
-            { label: `Subtotal (${cart.length} items)`, value: inr(subtotal) },
-            { label: "Delivery Fee", value: deliveryFee === 0 ? "FREE" : inr(deliveryFee), green: deliveryFee === 0 },
-            ...(couponDiscount > 0 ? [{ label: `Coupon (${appliedCoupon.code})`, value: `-${inr(couponDiscount)}`, green: true }] : []),
-            { label: "GST & Taxes", value: inr(tax) },
-          ].map(({ label, value, green }) => (
-            <div key={label} className="flex justify-between text-sm">
-              <span className="text-slate-400">{label}</span>
-              <span className={green ? "text-emerald-400 font-semibold" : "text-slate-200"}>{value}</span>
+          {/* ── Price Summary ───────────────────────────── */}
+          <div className="p-5 rounded-3xl bg-slate-900 border border-slate-800 space-y-3.5 shadow-xl">
+            <div className="text-sm font-bold text-slate-200">Price Details</div>
+            <div className="space-y-2">
+              {[
+                { label: `Subtotal (${cart.length} items)`, value: inr(subtotal) },
+                { label: "Delivery Fee", value: deliveryFee === 0 ? "FREE" : inr(deliveryFee), green: deliveryFee === 0 },
+                ...(couponDiscount > 0 ? [{ label: `Coupon (${appliedCoupon.code})`, value: `-${inr(couponDiscount)}`, green: true }] : []),
+                { label: "GST & Taxes", value: inr(tax) },
+              ].map(({ label, value, green }) => (
+                <div key={label} className="flex justify-between text-sm">
+                  <span className="text-slate-400">{label}</span>
+                  <span className={green ? "text-emerald-400 font-semibold" : "text-slate-200"}>{value}</span>
+                </div>
+              ))}
             </div>
-          ))}
-        </div>
-        <div className="border-t border-slate-800 pt-3 flex justify-between">
-          <span className="font-black text-white">Total Payable</span>
-          <span className="font-black text-white text-lg">{inr(total)}</span>
-        </div>
-        {couponDiscount > 0 && (
-          <div className="text-xs text-emerald-400 font-semibold">
-            🎉 You save {inr(couponDiscount)} with this order!
+            <div className="border-t border-slate-800 pt-3 flex justify-between">
+              <span className="font-black text-white">Total Payable</span>
+              <span className="font-black text-white text-lg">{inr(total)}</span>
+            </div>
+            {couponDiscount > 0 && (
+              <div className="text-xs text-emerald-400 font-semibold">
+                🎉 You save {inr(couponDiscount)} with this order!
+              </div>
+            )}
           </div>
-        )}
-      </div>
 
-      {/* ── Checkout CTA ────────────────────────────── */}
-      <button
-        onClick={() => onNav("checkout")}
-        className="w-full flex items-center justify-between px-6 py-4 rounded-2xl bg-cyan-500 hover:bg-cyan-400 text-white font-black text-base shadow-lg shadow-cyan-900/50 transition-all gd-tap"
-      >
-        <span>Proceed to Checkout</span>
-        <div className="flex items-center gap-2">
-          <span>{inr(total)}</span>
-          <ArrowRight size={18} />
+          {/* ── Checkout CTA ────────────────────────────── */}
+          <button
+            onClick={() => onNav("checkout")}
+            className="w-full flex items-center justify-between px-6 py-4 rounded-2xl bg-cyan-500 hover:bg-cyan-400 text-white font-black text-base shadow-lg shadow-cyan-900/50 transition-all gd-tap cursor-pointer"
+          >
+            <span>Proceed to Checkout</span>
+            <div className="flex items-center gap-2">
+              <span>{inr(total)}</span>
+              <ArrowRight size={18} />
+            </div>
+          </button>
         </div>
-      </button>
+      </div>
     </div>
   );
 }

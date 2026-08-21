@@ -311,7 +311,7 @@ export default function SellerProfile({ shopOnline, onToggleShop, onNav }) {
   };
 
   return (
-    <div className="space-y-5 gd-rise max-w-3xl">
+    <div className="space-y-5 gd-rise w-full">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-extrabold text-slate-100">Shop Profile</h1>

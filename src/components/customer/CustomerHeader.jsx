@@ -52,14 +52,14 @@ export default function CustomerHeader({
         </div>
 
         {/* Desktop Search */}
-        <div className="hidden lg:flex items-center gap-3 flex-1 max-w-2xl mx-6">
+        <div className="hidden lg:flex items-center gap-3 flex-1 mx-4 lg:mx-8">
           <button
             onClick={() => onNav("search")}
-            className="flex-1 flex items-center gap-2 px-4 py-2 rounded-xl bg-slate-800/60 border border-slate-700/60 text-slate-400 hover:border-cyan-500/40 hover:text-slate-300 transition-all text-sm cursor-pointer"
+            className="flex-1 flex items-center gap-2.5 px-4 py-2 rounded-xl bg-slate-800/60 border border-slate-700/60 text-slate-400 hover:border-cyan-500/40 hover:text-slate-300 transition-all text-sm cursor-pointer"
           >
-            <Search size={15} />
-            <span>Search products, shops…</span>
-            <Mic size={14} className="ml-auto text-slate-600" />
+            <Search size={16} />
+            <span>Search products, shops, gifts, groceries…</span>
+            <Mic size={14} className="ml-auto text-slate-500" />
           </button>
         </div>
 

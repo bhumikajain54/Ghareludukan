@@ -37,7 +37,7 @@ export default function CustomerOrderDetail({ orders = [], orderId, onNav, onUpd
   };
 
   return (
-    <div className="gd-rise max-w-2xl mx-auto space-y-5">
+    <div className="gd-rise w-full space-y-5">
       {/* ── Header ─────────────────────────────────── */}
       <div className="flex items-center gap-3">
         <button

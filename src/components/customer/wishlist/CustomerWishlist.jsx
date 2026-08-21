@@ -23,7 +23,7 @@ export default function CustomerWishlist({ onNav, onAddToCart }) {
   };
 
   return (
-    <div className="gd-rise space-y-5 max-w-4xl mx-auto">
+    <div className="gd-rise space-y-5 w-full">
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-xl font-extrabold text-white">Wishlist & Saved</h1>
@@ -89,7 +89,7 @@ export default function CustomerWishlist({ onNav, onAddToCart }) {
               </button>
             </div>
           ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 2xl:grid-cols-5 gap-4">
               {products.map((product) => (
                 <div
                   key={product.id}
@@ -182,7 +182,7 @@ export default function CustomerWishlist({ onNav, onAddToCart }) {
               </button>
             </div>
           ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
               {shops.map((shop) => (
                 <div
                   key={shop.id}

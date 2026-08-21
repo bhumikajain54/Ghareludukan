@@ -42,7 +42,7 @@ export default function CustomerProductDetail({ productId, onNav, onAddToCart })
     : { label: "In Stock", color: "text-emerald-400", bg: "bg-emerald-500/10 border-emerald-500/25", icon: CheckCircle2 };
 
   return (
-    <div className="gd-rise space-y-5 max-w-2xl mx-auto">
+    <div className="gd-rise space-y-5 w-full">
       {/* ── Back ───────────────────────────────────── */}
       <div className="flex items-center gap-3">
         <button

@@ -102,7 +102,7 @@ export default function SellerTransactions({ onNav }) {
   const totalSettled = transactions.filter((t) => t.type === "BANK_SETTLEMENT").reduce((s, t) => s + t.amount, 0);
 
   return (
-    <div className="space-y-6 gd-rise max-w-5xl">
+    <div className="space-y-6 gd-rise w-full">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>

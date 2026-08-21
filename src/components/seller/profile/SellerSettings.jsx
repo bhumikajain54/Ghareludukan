@@ -31,7 +31,7 @@ export default function SellerSettings({ onNav }) {
   };
 
   return (
-    <div className="space-y-6 gd-rise max-w-4xl">
+    <div className="space-y-6 gd-rise w-full">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>

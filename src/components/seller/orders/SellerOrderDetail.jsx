@@ -116,7 +116,7 @@ export default function SellerOrderDetail({ orders = [], orderId, onBack, onUpda
   };
 
   return (
-    <div className="space-y-5 gd-rise max-w-4xl">
+    <div className="space-y-5 gd-rise w-full">
       {/* Header */}
       <div className="flex items-center gap-3 flex-wrap">
         <button onClick={onBack} className="p-2 rounded-xl hover:bg-slate-800 text-slate-500 hover:text-slate-300 transition-colors">

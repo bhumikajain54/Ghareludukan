@@ -173,7 +173,7 @@ export default function CustomerOrders({ orders = [], onNav }) {
       )}
 
       {/* ── Order List ──────────────────────────────── */}
-      <div className="space-y-3">
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
         {filtered.map((order) => (
           <OrderCard key={order.id} order={order} onNav={onNav} />
         ))}

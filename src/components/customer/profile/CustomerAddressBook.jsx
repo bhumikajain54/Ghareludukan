@@ -66,7 +66,7 @@ export default function CustomerAddressBook({ onNav }) {
   };
 
   return (
-    <div className="gd-rise space-y-5 max-w-3xl mx-auto">
+    <div className="gd-rise space-y-5 w-full">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
@@ -85,7 +85,7 @@ export default function CustomerAddressBook({ onNav }) {
       </div>
 
       {/* Address List */}
-      <div className="space-y-3">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         {addresses.map((addr) => (
           <div
             key={addr.id}

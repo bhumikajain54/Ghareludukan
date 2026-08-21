@@ -15,7 +15,7 @@ export default function CustomerCoupons({ onNav }) {
   };
 
   return (
-    <div className="gd-rise space-y-6 max-w-3xl mx-auto">
+    <div className="gd-rise space-y-6 w-full">
       {/* Header */}
       <div>
         <h1 className="text-xl font-extrabold text-white">Coupons & Offers</h1>
@@ -25,7 +25,7 @@ export default function CustomerCoupons({ onNav }) {
       </div>
 
       {/* Coupon Grid */}
-      <div className="space-y-3.5">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         {MOCK_COUPONS.map((coupon) => (
           <div
             key={coupon.id}

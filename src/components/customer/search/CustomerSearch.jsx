@@ -207,12 +207,12 @@ export default function CustomerSearch({ onNav, onAddToCart }) {
 
           {/* Products Results */}
           {activeTab === "products" && filteredProducts.length > 0 && (
-            <div className="space-y-2">
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3.5">
               {filteredProducts.map((p) => (
                 <button
                   key={p.id}
                   onClick={() => onNav("product-detail", { productId: p.id })}
-                  className="w-full flex items-center gap-3 p-3 rounded-2xl bg-slate-900 border border-slate-800 hover:border-cyan-500/40 transition-all gd-tap text-left"
+                  className="w-full flex items-center gap-3 p-3.5 rounded-2xl bg-slate-900 border border-slate-800 hover:border-cyan-500/40 transition-all gd-tap text-left cursor-pointer"
                 >
                   <div className="w-14 h-14 rounded-xl bg-slate-800 flex items-center justify-center flex-shrink-0">
                     <ShoppingBag size={22} className="text-slate-500" />
@@ -235,7 +235,7 @@ export default function CustomerSearch({ onNav, onAddToCart }) {
                     {p.available && (
                       <button
                         onClick={(e) => { e.stopPropagation(); onAddToCart(p); }}
-                        className="mt-1 px-2.5 py-1 rounded-lg bg-cyan-500/15 border border-cyan-500/40 text-cyan-300 text-[10px] font-bold hover:bg-cyan-500/25 transition-colors"
+                        className="mt-1 px-2.5 py-1 rounded-lg bg-cyan-500/15 border border-cyan-500/40 text-cyan-300 text-[10px] font-bold hover:bg-cyan-500/25 transition-colors cursor-pointer"
                       >
                         + Add
                       </button>
@@ -248,7 +248,7 @@ export default function CustomerSearch({ onNav, onAddToCart }) {
 
           {/* Shop Results */}
           {activeTab === "shops" && filteredShops.length > 0 && (
-            <div className="space-y-2">
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3.5">
               {filteredShops.map((s) => (
                 <button
                   key={s.id}

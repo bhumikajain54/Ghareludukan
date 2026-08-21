@@ -34,7 +34,7 @@ export default function CustomerWallet({ onNav }) {
   ];
 
   return (
-    <div className="gd-rise space-y-6 max-w-3xl mx-auto">
+    <div className="gd-rise space-y-6 w-full">
       {/* Header */}
       <div>
         <h1 className="text-xl font-extrabold text-white">Wallet & Cash</h1>
