@@ -2,15 +2,34 @@ import React, { useState } from "react";
 import AuthBrandHeader from "./AuthBrandHeader";
 import PhoneStep from "./PhoneStep";
 import OtpStep from "./OtpStep";
+import DeliveryAuthCard from "./DeliveryAuthCard";
+import AdminAuthCard from "./AdminAuthCard";
+import SupportAuthCard from "./SupportAuthCard";
 import Footer from "../common/Footer";
 import { Store, ShieldCheck, Zap, Receipt, MapPin, Gift, ShoppingBag, Pill, Cake } from "lucide-react";
+
+export const REGISTERED_USERS = {
+  "9829000001": { phone: "+91 98290 00001", role: "admin", name: "Sanjay Saxena (Admin)" },
+  "9829000002": { phone: "+91 98290 00002", role: "support", name: "Neha Rathore (Support Lead)" },
+  "9829011223": { phone: "+91 98290 11223", role: "delivery", name: "Vikram Singh" },
+  "9829144556": { phone: "+91 98291 44556", role: "seller", name: "Rajesh Agarwal", shopName: "Raj Traders" },
+  "9876543210": { phone: "+91 98765 43210", role: "customer", name: "Bhumika Jain" },
+};
 
 export default function Auth({ onLogin }) {
   const [phone, setPhone] = useState("");
   const [otp, setOtp] = useState("");
   const [step, setStep] = useState("phone"); // 'phone' | 'otp'
-  const [role, setRole] = useState("customer"); // 'customer' | 'seller'
   const [error, setError] = useState("");
+
+  const [activePortal] = useState(() => {
+    try {
+      const params = new URLSearchParams(window.location.search);
+      const p = params.get("portal") || params.get("gateway");
+      if (p) return p.toLowerCase();
+    } catch {}
+    return "public";
+  });
 
   const handleSendOtp = () => {
     const digitsOnly = phone.replace(/\D/g, "");
@@ -28,8 +47,17 @@ export default function Auth({ onLogin }) {
       return;
     }
     setError("");
+
+    const digitsOnly = phone.replace(/\D/g, "");
+    // Resolve user from registry or default to customer
+    const registered = REGISTERED_USERS[digitsOnly] || {
+      phone: `+91 ${digitsOnly.slice(0, 5)} ${digitsOnly.slice(5)}`,
+      role: "customer",
+      name: "Bhumika Jain",
+    };
+
     if (onLogin) {
-      onLogin({ phone, role });
+      onLogin(registered);
     }
   };
 
@@ -100,19 +128,19 @@ export default function Auth({ onLogin }) {
                   <Zap size={16} />
                 </div>
                 <div className="min-w-0">
-                  <h3 className="text-xs xl:text-sm font-bold text-slate-900 leading-tight">15-Min Delivery</h3>
-                  <p className="text-[11px] xl:text-xs text-slate-500 font-medium leading-snug mt-0.5">Order gifts, clocks, or daily items from nearby stores.</p>
+                  <h3 className="text-xs xl:text-sm font-bold text-slate-900 leading-tight">15-Minute Local Delivery</h3>
+                  <p className="text-[11px] xl:text-xs text-slate-500 font-medium leading-snug mt-0.5">Instant dispatch from neighbourhood stores to your home.</p>
                 </div>
               </div>
 
               {/* Item 2: Khata Bill Paper */}
-              <div className="flex items-start gap-3 p-2.5 xl:p-3 rounded-xl xl:rounded-2xl bg-white/80 border border-slate-200/80 hover:border-blue-400/50 hover:bg-white hover:shadow-md transition-all duration-200 group">
-                <div className="w-8 h-8 xl:w-9 xl:h-9 rounded-lg xl:rounded-xl bg-blue-50 border border-blue-200/80 text-blue-600 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform shadow-2xs">
+              <div className="flex items-start gap-3 p-2.5 xl:p-3 rounded-xl xl:rounded-2xl bg-white/80 border border-slate-200/80 hover:border-sky-400/50 hover:bg-white hover:shadow-md transition-all duration-200 group">
+                <div className="w-8 h-8 xl:w-9 xl:h-9 rounded-lg xl:rounded-xl bg-sky-50 border border-sky-200/80 text-sky-600 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform shadow-2xs">
                   <Receipt size={16} />
                 </div>
                 <div className="min-w-0">
-                  <h3 className="text-xs xl:text-sm font-bold text-slate-900 leading-tight">Khata Bill Paper</h3>
-                  <p className="text-[11px] xl:text-xs text-slate-500 font-medium leading-snug mt-0.5">Authentic itemized digital ledger receipts from shops.</p>
+                  <h3 className="text-xs xl:text-sm font-bold text-slate-900 leading-tight">Original Shop Parchi</h3>
+                  <p className="text-[11px] xl:text-xs text-slate-500 font-medium leading-snug mt-0.5">Transparent billing with authentic physical merchant receipts.</p>
                 </div>
               </div>
 
@@ -142,11 +170,11 @@ export default function Auth({ onLogin }) {
             {/* Bottom Trust Indicators */}
             <div className="flex items-center gap-5 pt-1.5 text-[11px] xl:text-xs text-slate-500 font-semibold border-t border-slate-200/80">
               <span className="flex items-center gap-1.5">
-                <span className="w-2 h-2 rounded-full bg-emerald-500 shadow-xs" />
+                <span className="w-2 h-2 rounded-full bg-cyan-500 shadow-xs" />
                 Live in Your Neighborhood
               </span>
               <span className="flex items-center gap-1.5">
-                <span className="w-2 h-2 rounded-full bg-cyan-500 shadow-xs" />
+                <span className="w-2 h-2 rounded-full bg-indigo-500 shadow-xs" />
                 Direct Shop-to-Door Delivery
               </span>
             </div>
@@ -155,32 +183,39 @@ export default function Auth({ onLogin }) {
           {/* Right Column: Prominent, Clean Light Login Card */}
           <div className="lg:col-span-6 flex justify-center w-full">
             <div className="w-full max-w-md p-5 sm:p-7 rounded-2xl sm:rounded-3xl bg-white border border-slate-200 shadow-xl shadow-slate-200/50 relative gd-rise">
-              <AuthBrandHeader />
-
-              {step === "phone" ? (
-                <PhoneStep
-                  phone={phone}
-                  onPhoneChange={(val) => {
-                    setPhone(val);
-                    if (error) setError("");
-                  }}
-                  role={role}
-                  onRoleChange={setRole}
-                  onSendOtp={handleSendOtp}
-                  error={error}
-                />
+              {activePortal === "delivery" ? (
+                <DeliveryAuthCard onLogin={onLogin} />
+              ) : activePortal === "admin" ? (
+                <AdminAuthCard onLogin={onLogin} />
+              ) : activePortal === "support" ? (
+                <SupportAuthCard onLogin={onLogin} />
               ) : (
-                <OtpStep
-                  phone={phone}
-                  otp={otp}
-                  onOtpChange={(val) => {
-                    setOtp(val);
-                    if (error) setError("");
-                  }}
-                  onVerify={handleVerify}
-                  onChangePhone={handleChangePhone}
-                  error={error}
-                />
+                <>
+                  <AuthBrandHeader />
+                  {step === "phone" ? (
+                    <PhoneStep
+                      phone={phone}
+                      onPhoneChange={(val) => {
+                        setPhone(val);
+                        if (error) setError("");
+                      }}
+                      onSendOtp={handleSendOtp}
+                      error={error}
+                    />
+                  ) : (
+                    <OtpStep
+                      phone={phone}
+                      otp={otp}
+                      onOtpChange={(val) => {
+                        setOtp(val);
+                        if (error) setError("");
+                      }}
+                      onVerify={handleVerify}
+                      onChangePhone={handleChangePhone}
+                      error={error}
+                    />
+                  )}
+                </>
               )}
             </div>
           </div>

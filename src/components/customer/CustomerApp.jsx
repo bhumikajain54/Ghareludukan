@@ -129,6 +129,8 @@ export default function CustomerApp({
     }
   });
 
+  const [searchParams, setSearchParams] = useState({ category: "", subcategory: "", query: "" });
+
   // Sync active view payloads
   useEffect(() => {
     try {
@@ -215,6 +217,13 @@ export default function CustomerApp({
     if (params.shopId) setSelectedShopId(params.shopId);
     if (params.productId) setSelectedProductId(params.productId);
     if (params.orderId) setSelectedOrderId(params.orderId);
+    if (targetView === "search" || targetView === "categories") {
+      setSearchParams({
+        category: params.category || "",
+        subcategory: params.subcategory || "",
+        query: params.query || "",
+      });
+    }
 
     setPrevView(view);
     setView(targetView);
@@ -244,6 +253,9 @@ export default function CustomerApp({
           price: product.price,
           qty: product.qty || 1,
           unit: product.unit,
+          image: product.image,
+          category: product.category,
+          subcategory: product.subcategory,
           available: true,
         },
       ];
@@ -334,6 +346,9 @@ export default function CustomerApp({
       case "categories":
         return (
           <CustomerSearch
+            initialCategory={searchParams.category}
+            initialSubcategory={searchParams.subcategory}
+            initialQuery={searchParams.query}
             onNav={navigate}
             onAddToCart={handleAddToCart}
           />

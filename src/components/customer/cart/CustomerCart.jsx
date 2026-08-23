@@ -4,14 +4,21 @@ import {
   ArrowRight, Store, AlertTriangle, ShoppingCart, X,
 } from "lucide-react";
 import { inr, MOCK_COUPONS } from "../CustomerConstants";
+import ProductImage from "../../common/ProductImage";
 
 function CartItem({ item, onQtyChange, onRemove, onMoveToWishlist }) {
   return (
     <div className="p-3 rounded-2xl bg-slate-900 border border-slate-800 space-y-3">
       <div className="flex items-start gap-3">
         {/* Thumb */}
-        <div className="w-16 h-16 rounded-xl bg-slate-800 border border-slate-700/50 flex items-center justify-center flex-shrink-0">
-          <ShoppingBag size={22} className="text-slate-500" />
+        <div className="w-16 h-16 rounded-xl bg-slate-950 border border-slate-700/50 flex items-center justify-center flex-shrink-0 overflow-hidden relative">
+          <ProductImage
+            src={item.image}
+            alt={item.name}
+            category={item.category}
+            subcategory={item.subcategory}
+            className="w-full h-full object-cover"
+          />
         </div>
         {/* Info */}
         <div className="flex-1 min-w-0">

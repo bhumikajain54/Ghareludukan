@@ -5,6 +5,7 @@ import {
   Download, Star, AlertTriangle, ChevronRight,
 } from "lucide-react";
 import { MOCK_ORDERS, ORDER_STATUS_LABEL, ORDER_STATUS_COLOR, PAYMENT_STATUS_COLOR, CANCEL_REASONS, RETURN_REASONS, inr } from "../CustomerConstants";
+import ProductImage from "../../common/ProductImage";
 
 export default function CustomerOrderDetail({ orders = [], orderId, onNav, onUpdateOrderStatus }) {
   const order = orders.find((o) => o.id === orderId) || orders[0] || MOCK_ORDERS[0];
@@ -79,8 +80,14 @@ export default function CustomerOrderDetail({ orders = [], orderId, onNav, onUpd
           {order.items.map((item) => (
             <div key={item.productId} className="flex items-center justify-between py-2">
               <div className="flex items-center gap-2">
-                <div className="w-8 h-8 rounded-lg bg-slate-800 flex items-center justify-center flex-shrink-0">
-                  <ShoppingBag size={14} className="text-slate-500" />
+                <div className="w-9 h-9 rounded-lg bg-slate-950 flex items-center justify-center flex-shrink-0 overflow-hidden relative border border-slate-800">
+                  <ProductImage
+                    src={item.image}
+                    alt={item.name}
+                    category={item.category}
+                    subcategory={item.subcategory}
+                    className="w-full h-full object-cover"
+                  />
                 </div>
                 <div>
                   <div className="text-sm font-semibold text-slate-200">{item.name}</div>

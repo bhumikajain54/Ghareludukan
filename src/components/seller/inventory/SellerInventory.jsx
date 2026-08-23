@@ -4,6 +4,7 @@ import {
   Plus, Minus, RefreshCw, Search, X, History,
 } from "lucide-react";
 import { MOCK_PRODUCTS, MOCK_STOCK_HISTORY, inr } from "../SellerConstants";
+import ProductImage from "../../common/ProductImage";
 
 function StockBadge({ product }) {
   if (product.stock === 0) return <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-red-500/15 text-red-400 border border-red-500/20">Out of Stock</span>;
@@ -234,8 +235,14 @@ export default function SellerInventory() {
                 <tr key={product.id} className="border-b border-slate-800/60 hover:bg-slate-800/30 transition-colors ticket-row-hover">
                   <td className="px-4 py-3.5">
                     <div className="flex items-center gap-3">
-                      <div className="w-9 h-9 rounded-xl bg-slate-800 border border-slate-700 flex items-center justify-center flex-shrink-0">
-                        <Package size={14} className="text-slate-500" />
+                      <div className="w-9 h-9 rounded-xl bg-slate-950 border border-slate-700 flex items-center justify-center flex-shrink-0 overflow-hidden relative">
+                        <ProductImage
+                          src={product.image}
+                          alt={product.name}
+                          category={product.category}
+                          subcategory={product.subcategory}
+                          className="w-full h-full object-cover"
+                        />
                       </div>
                       <div className="text-sm font-semibold text-slate-200 truncate max-w-[160px]">{product.name}</div>
                     </div>

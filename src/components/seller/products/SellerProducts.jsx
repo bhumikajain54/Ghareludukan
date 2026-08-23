@@ -4,6 +4,7 @@ import {
   Package, MoreVertical, ChevronDown,
 } from "lucide-react";
 import { MOCK_PRODUCTS, PRODUCT_CATEGORIES, inr } from "../SellerConstants";
+import ProductImage from "../../common/ProductImage";
 
 const TABS = ["All Products", "Active", "Low Stock", "Out of Stock", "Archived"];
 
@@ -155,8 +156,14 @@ export default function SellerProducts({ onAddProduct, onEditProduct }) {
                   <tr key={product.id} className="border-b border-slate-800/60 hover:bg-slate-800/30 transition-colors group ticket-row-hover">
                     <td className="px-4 py-3.5">
                       <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-xl bg-slate-800 border border-slate-700 flex items-center justify-center flex-shrink-0">
-                          <Package size={16} className="text-slate-500" />
+                        <div className="w-10 h-10 rounded-xl bg-slate-950 border border-slate-700 flex items-center justify-center flex-shrink-0 overflow-hidden relative">
+                          <ProductImage
+                            src={product.image}
+                            alt={product.name}
+                            category={product.category}
+                            subcategory={product.subcategory}
+                            className="w-full h-full object-cover"
+                          />
                         </div>
                         <div className="min-w-0">
                           <div className="text-sm font-semibold text-slate-200 truncate">{product.name}</div>

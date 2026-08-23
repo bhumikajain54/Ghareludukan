@@ -8,6 +8,7 @@ import {
   MOCK_SAVED_SHOPS,
   inr,
 } from "../CustomerConstants";
+import ProductImage from "../../common/ProductImage";
 
 export default function CustomerWishlist({ onNav, onAddToCart }) {
   const [activeTab, setActiveTab] = useState("products");
@@ -97,8 +98,14 @@ export default function CustomerWishlist({ onNav, onAddToCart }) {
                 >
                   <div className="space-y-3">
                     <div className="flex items-start justify-between gap-2">
-                      <div className="w-16 h-16 rounded-xl bg-slate-800 flex items-center justify-center flex-shrink-0">
-                        <ShoppingBag size={24} className="text-slate-500" />
+                      <div className="w-16 h-16 rounded-xl bg-slate-950 flex items-center justify-center flex-shrink-0 overflow-hidden relative border border-slate-800">
+                        <ProductImage
+                          src={product.image}
+                          alt={product.name}
+                          category={product.category}
+                          subcategory={product.subcategory}
+                          className="w-full h-full object-cover"
+                        />
                       </div>
                       <button
                         onClick={() => removeProduct(product.id)}
@@ -190,8 +197,12 @@ export default function CustomerWishlist({ onNav, onAddToCart }) {
                 >
                   <div className="flex items-start justify-between gap-3">
                     <div className="flex items-center gap-3">
-                      <div className="w-12 h-12 rounded-xl bg-cyan-600/20 border border-cyan-500/40 flex items-center justify-center text-cyan-400 font-extrabold text-base flex-shrink-0">
-                        {shop.name[0]}
+                      <div className="w-12 h-12 rounded-xl bg-slate-800 flex items-center justify-center text-cyan-400 font-extrabold text-base flex-shrink-0 overflow-hidden relative">
+                        {shop.logo || shop.image ? (
+                          <img src={shop.logo || shop.image} alt={shop.name} className="w-full h-full object-cover" loading="lazy" />
+                        ) : (
+                          <span>{shop.name[0]}</span>
+                        )}
                       </div>
                       <div>
                         <div className="flex items-center gap-1.5">
