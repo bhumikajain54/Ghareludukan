@@ -3933,8 +3933,8 @@ export const MOCK_ORDERS = [
 
 // ─── Initial Active Cart ─────────────────────────────────────
 export const INITIAL_CART = [
-  { productId: "sp1", name: "Toor Dal", shopName: "Raj Traders", shopId: "sh1", price: 148, qty: 2, unit: "1 kg", available: true },
-  { productId: "sp9", name: "Farm Fresh Tomatoes", shopName: "Fresh & Green", shopId: "sh2", price: 45, qty: 1, unit: "1 kg", available: true },
+  { productId: "sp1", name: "Toor Dal", shopName: "Raj Traders", shopId: "sh1", price: 148, qty: 2, unit: "1 kg", available: true, image: "/products/toor-dal.png", category: "Grocery & Food", subcategory: "Pulses & Dals" },
+  { productId: "sp9", name: "Farm Fresh Tomatoes", shopName: "Fresh & Green", shopId: "sh2", price: 45, qty: 1, unit: "1 kg", available: true, image: "https://images.unsplash.com/photo-1592924357228-91a4daadcfea?w=600&auto=format&fit=crop&q=80", category: "Vegetables", subcategory: "Fresh Vegetables" },
 ];
 
 // ─── Master Wishlist & Saved ─────────────────────────────────

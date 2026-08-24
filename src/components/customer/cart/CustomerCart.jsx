@@ -3,20 +3,27 @@ import {
   ShoppingBag, Plus, Minus, Trash2, Heart, Tag, ChevronRight,
   ArrowRight, Store, AlertTriangle, ShoppingCart, X,
 } from "lucide-react";
-import { inr, MOCK_COUPONS } from "../CustomerConstants";
+import { inr, MOCK_COUPONS, MOCK_PRODUCTS } from "../CustomerConstants";
 import ProductImage from "../../common/ProductImage";
 
 function CartItem({ item, onQtyChange, onRemove, onMoveToWishlist }) {
+  const matchedProduct = MOCK_PRODUCTS.find(
+    (p) => p.id === item.productId || p.productId === item.productId || (p.name && item.name && p.name.toLowerCase() === item.name.toLowerCase())
+  );
+  const productImage = item.image || matchedProduct?.image;
+  const productCategory = item.category || matchedProduct?.category || "Grocery & Food";
+  const productSubcategory = item.subcategory || matchedProduct?.subcategory;
+
   return (
     <div className="p-3 rounded-2xl bg-slate-900 border border-slate-800 space-y-3">
       <div className="flex items-start gap-3">
         {/* Thumb */}
         <div className="w-16 h-16 rounded-xl bg-slate-950 border border-slate-700/50 flex items-center justify-center flex-shrink-0 overflow-hidden relative">
           <ProductImage
-            src={item.image}
+            src={productImage}
             alt={item.name}
-            category={item.category}
-            subcategory={item.subcategory}
+            category={productCategory}
+            subcategory={productSubcategory}
             className="w-full h-full object-cover"
           />
         </div>
