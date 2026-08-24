@@ -839,7 +839,7 @@ export const MOCK_PRODUCTS = [
     available: true,
     status: "ACTIVE",
     unit: "1 pc",
-    image: "https://images.unsplash.com/photo-1618424181497-157f25b6ddd5?w=600&auto=format&fit=crop&q=80",
+    image: "/products/braided-usbc-cable.jpg",
     description: "Tough nylon braided fast charging and 480Mbps data transfer cable with reinforced aluminum connectors.",
     tags: ["cable", "usb-c cable", "type c", "fast charging", "portronics", "electronics"],
     shopId: "sh5",

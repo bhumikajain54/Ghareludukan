@@ -132,8 +132,9 @@ export default function CustomerShopDetail({ shopId, onNav, onAddToCart }) {
       {/* ── Top Navigation Bar ──────────────────────── */}
       <div className="flex items-center gap-3">
         <button
-          onClick={() => onNav("home")}
+          onClick={() => onNav("shops")}
           className="p-2.5 rounded-2xl bg-slate-900 border border-slate-800 text-slate-400 hover:text-cyan-400 hover:border-cyan-500/40 transition-all cursor-pointer shadow-md"
+          title="Back to All Shops"
         >
           <ArrowLeft size={16} />
         </button>

@@ -5,6 +5,7 @@ import CustomerBottomNav from "./CustomerBottomNav";
 
 import CustomerHome from "./home/CustomerHome";
 import CustomerSearch from "./search/CustomerSearch";
+import CustomerShops from "./shops/CustomerShops";
 import CustomerShopDetail from "./shops/CustomerShopDetail";
 import CustomerProductDetail from "./products/CustomerProductDetail";
 import CustomerCart from "./cart/CustomerCart";
@@ -354,8 +355,15 @@ export default function CustomerApp({
           />
         );
 
-      case "shop-detail":
       case "shops":
+        return (
+          <CustomerShops
+            onNav={navigate}
+            onAddToCart={handleAddToCart}
+          />
+        );
+
+      case "shop-detail":
         return (
           <CustomerShopDetail
             shopId={selectedShopId}

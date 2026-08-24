@@ -28,10 +28,10 @@ function ShopCard({ shop, onNav }) {
   return (
     <button
       onClick={() => onNav("shop-detail", { shopId: shop.id })}
-      className="flex-shrink-0 w-56 bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden hover:border-cyan-500/40 transition-all group gd-tap text-left shadow-lg"
+      className="w-full bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden hover:border-cyan-500/40 transition-all group gd-tap text-left shadow-lg"
     >
       {/* Shop Image Container */}
-      <div className="h-32 w-full bg-slate-800 relative overflow-hidden">
+      <div className="h-28 sm:h-32 w-full bg-slate-800 relative overflow-hidden">
         {shop.image && !imgError ? (
           <img
             src={shop.image}
@@ -59,7 +59,7 @@ function ShopCard({ shop, onNav }) {
           </div>
         )}
       </div>
-      <div className="p-3 space-y-1.5">
+      <div className="p-2.5 sm:p-3 space-y-1.5">
         <div className="flex items-start justify-between gap-1">
           <div className="font-bold text-sm text-slate-100 truncate">{shop.name}</div>
           {shop.verified && <ShieldCheck size={13} className="text-cyan-400 flex-shrink-0 mt-0.5" />}
@@ -88,10 +88,10 @@ export function ProductCard({ product, onNav, onAddToCart }) {
       role="button"
       tabIndex={0}
       onClick={() => onNav("product-detail", { productId: product.id })}
-      className="flex-shrink-0 w-44 bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden hover:border-cyan-500/40 transition-all group gd-tap text-left cursor-pointer select-none shadow-lg flex flex-col justify-between"
+      className="w-full bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden hover:border-cyan-500/40 transition-all group gd-tap text-left cursor-pointer select-none shadow-lg flex flex-col justify-between"
     >
       {/* Product Image Container */}
-      <div className="h-36 w-full bg-slate-950 relative overflow-hidden flex items-center justify-center">
+      <div className="h-32 sm:h-36 w-full bg-slate-950 relative overflow-hidden flex items-center justify-center">
         <ProductImage
           src={product.image}
           alt={product.name}
@@ -115,7 +115,7 @@ export function ProductCard({ product, onNav, onAddToCart }) {
         )}
       </div>
 
-      <div className="p-3 space-y-1 flex-1 flex flex-col justify-between">
+      <div className="p-2.5 sm:p-3 space-y-1 flex-1 flex flex-col justify-between">
         <div>
           <div className="text-xs font-bold text-slate-100 line-clamp-2 leading-tight min-h-[32px]">{product.name}</div>
           <div className="text-[10px] text-slate-400 truncate mt-0.5 font-medium">{product.brand || product.shopName} · {product.unit}</div>
@@ -184,47 +184,101 @@ export default function CustomerHome({ onNav, onAddToCart, recentOrders = [] }) 
     <div className="space-y-7 gd-rise pb-8">
       {/* ── Hero Banner Carousel ───────────────────── */}
       <section>
-        <div className="relative rounded-3xl overflow-hidden shadow-2xl border border-slate-800">
+        <div className="relative rounded-3xl overflow-hidden shadow-2xl border border-slate-700/50">
           {HERO_BANNERS.map((b, i) => (
             <div
               key={b.id}
               className={`transition-all duration-500 ${i === activeBanner ? "block" : "hidden"}`}
             >
-              <div className={`bg-gradient-to-br ${b.accent} p-6 sm:p-8 min-h-[160px] flex flex-col justify-between relative`}>
-                <span className={`self-start px-2.5 py-1 rounded-lg border text-[10px] font-bold tracking-wider uppercase ${b.badgeColor}`}>
-                  {b.tag}
-                </span>
-                <div className="mt-3 space-y-1.5 max-w-lg">
-                  <h2 className="text-xl sm:text-3xl font-black text-white leading-tight">{b.title}</h2>
-                  <p className="text-xs sm:text-sm text-slate-300">{b.subtitle}</p>
+              <div className={`bg-gradient-to-br ${b.accent} relative overflow-hidden`}>
+                {/* SVG dot-grid pattern overlay */}
+                <svg className="absolute inset-0 w-full h-full opacity-10 pointer-events-none" xmlns="http://www.w3.org/2000/svg">
+                  <defs>
+                    <pattern id={`dots-${i}`} x="0" y="0" width="20" height="20" patternUnits="userSpaceOnUse">
+                      <circle cx="2" cy="2" r="1.5" fill="white" />
+                    </pattern>
+                  </defs>
+                  <rect width="100%" height="100%" fill={`url(#dots-${i})`} />
+                </svg>
+
+                {/* Large hollow decorative ring — right side */}
+                <div className="absolute -right-16 top-1/2 -translate-y-1/2 w-56 h-56 rounded-full border-[28px] border-white/10 pointer-events-none" />
+                <div className="absolute -right-8 top-1/2 -translate-y-1/2 w-36 h-36 rounded-full border-[16px] border-white/8 pointer-events-none" />
+
+                {/* Glow blob top-left */}
+                <div className="absolute -top-10 -left-10 w-40 h-40 rounded-full bg-white/8 blur-2xl pointer-events-none" />
+
+                {/* Main layout */}
+                <div className="relative flex items-stretch min-h-[200px]">
+                  {/* LEFT content */}
+                  <div className="flex-1 flex flex-col justify-between px-6 sm:px-8 py-6 gap-4">
+                    {/* Top: badge + title + subtitle */}
+                    <div className="space-y-2.5">
+                      <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full border text-[10px] font-black tracking-widest uppercase ${b.badgeColor}`}>
+                        <span className="w-1.5 h-1.5 rounded-full bg-current animate-pulse" />
+                        {b.tag}
+                      </span>
+                      <h2 className="text-2xl sm:text-[2.2rem] font-black text-white leading-[1.1] tracking-tight">
+                        {b.title}
+                      </h2>
+                      <p className="text-[11px] sm:text-xs text-white/65 leading-relaxed max-w-[260px]">
+                        {b.subtitle}
+                      </p>
+                    </div>
+
+                    {/* Bottom: buttons + dots */}
+                    <div className="space-y-3">
+                      <div className="flex items-center gap-2.5">
+                        <button
+                          onClick={() => onNav("search")}
+                          className="px-5 py-2.5 rounded-2xl bg-white text-slate-900 font-extrabold text-xs transition-all flex items-center gap-2 shadow-xl hover:shadow-white/20 hover:scale-105 active:scale-95 cursor-pointer"
+                        >
+                          {b.cta} <ArrowRight size={13} />
+                        </button>
+                        <button
+                          onClick={() => onNav("search")}
+                          className="px-4 py-2.5 rounded-2xl bg-white/12 border border-white/20 text-white text-xs font-bold hover:bg-white/22 transition-all cursor-pointer backdrop-blur-sm"
+                        >
+                          Browse All
+                        </button>
+                      </div>
+                      {/* Slide dots */}
+                      <div className="flex items-center gap-1.5">
+                        {HERO_BANNERS.map((_, idx) => (
+                          <button
+                            key={idx}
+                            onClick={() => setActiveBanner(idx)}
+                            className={`rounded-full transition-all duration-300 ${idx === activeBanner ? "w-7 h-2 bg-white" : "w-2 h-2 bg-white/30 hover:bg-white/50"}`}
+                          />
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* RIGHT: decorative emoji stack — hidden on mobile */}
+                  <div className="hidden sm:flex flex-col items-center justify-center pr-12 pl-4 gap-3 relative">
+                    {/* Outer glow ring */}
+                    <div className="absolute w-32 h-32 rounded-full bg-white/8 blur-lg" />
+                    {/* Main icon card */}
+                    <div className="relative w-24 h-24 rounded-[24px] bg-white/15 border border-white/25 flex items-center justify-center text-[3.5rem] shadow-2xl backdrop-blur-md z-10 hover:scale-105 transition-transform duration-300">
+                      {i === 0 ? "🛒" : i === 1 ? "🥦" : "🥛"}
+                    </div>
+                    {/* Top-right floating pill */}
+                    <div className="absolute top-5 -right-1 bg-white/25 border border-white/35 rounded-full px-2.5 py-1 text-[10px] font-black text-white shadow-lg backdrop-blur-sm z-20 whitespace-nowrap">
+                      {i === 0 ? "🏷 20% OFF" : i === 1 ? "⚡ 20 min" : "✅ Fresh"}
+                    </div>
+                    {/* Bottom-left floating pill */}
+                    <div className="absolute bottom-5 -left-2 bg-white/25 border border-white/35 rounded-full px-2.5 py-1 text-[10px] font-black text-white shadow-lg backdrop-blur-sm z-20 whitespace-nowrap">
+                      {i === 0 ? "📍 Near You" : i === 1 ? "🌿 Organic" : "🏪 New Shop"}
+                    </div>
+                  </div>
                 </div>
-                <div className="flex items-center gap-3 mt-4">
-                  <button
-                    onClick={() => onNav("search")}
-                    className="px-4 py-2 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-extrabold text-xs transition-all flex items-center gap-1.5 shadow-lg shadow-cyan-500/30 cursor-pointer"
-                  >
-                    {b.cta} <ArrowRight size={13} />
-                  </button>
-                  <button
-                    onClick={() => onNav("search", { category: "electronics" })}
-                    className="px-3.5 py-2 rounded-xl bg-white/10 border border-white/20 text-white text-xs font-bold hover:bg-white/20 transition-all cursor-pointer"
-                  >
-                    Explore Gadgets 📱
-                  </button>
-                </div>
+
+                {/* Bottom shimmer line */}
+                <div className="h-px w-full bg-gradient-to-r from-transparent via-white/20 to-transparent" />
               </div>
             </div>
           ))}
-          {/* Dots */}
-          <div className="flex items-center justify-center gap-1.5 pb-3 bg-slate-950/60">
-            {HERO_BANNERS.map((_, i) => (
-              <button
-                key={i}
-                onClick={() => setActiveBanner(i)}
-                className={`rounded-full transition-all ${i === activeBanner ? "w-5 h-1.5 bg-cyan-400" : "w-1.5 h-1.5 bg-slate-600"}`}
-              />
-            ))}
-          </div>
         </div>
       </section>
 
@@ -309,9 +363,9 @@ export default function CustomerHome({ onNav, onAddToCart, recentOrders = [] }) 
             See all <ChevronRight size={13} />
           </button>
         </div>
-        <div className="flex gap-3 overflow-x-auto scrollbar-none pb-2">
-          {MOCK_SHOPS.map((shop) => (
-            <div key={shop.id} className="relative flex-shrink-0">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-8 gap-3">
+          {MOCK_SHOPS.slice(0, 8).map((shop) => (
+            <div key={shop.id} className="relative">
               <ShopCard shop={shop} onNav={onNav} />
               <button
                 onClick={(e) => toggleSave(shop.id, e)}
@@ -346,7 +400,7 @@ export default function CustomerHome({ onNav, onAddToCart, recentOrders = [] }) 
             Explore All <ChevronRight size={13} />
           </button>
         </div>
-        <div className="flex gap-3 overflow-x-auto scrollbar-none pb-1">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-8 gap-3">
           {electronicsProducts.map((product) => (
             <ProductCard key={product.id} product={product} onNav={onNav} onAddToCart={onAddToCart} />
           ))}
@@ -372,7 +426,7 @@ export default function CustomerHome({ onNav, onAddToCart, recentOrders = [] }) 
             Explore All <ChevronRight size={13} />
           </button>
         </div>
-        <div className="flex gap-3 overflow-x-auto scrollbar-none pb-1">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-8 gap-3">
           {kidsProducts.map((product) => (
             <ProductCard key={product.id} product={product} onNav={onNav} onAddToCart={onAddToCart} />
           ))}
@@ -398,7 +452,7 @@ export default function CustomerHome({ onNav, onAddToCart, recentOrders = [] }) 
             Explore All <ChevronRight size={13} />
           </button>
         </div>
-        <div className="flex gap-3 overflow-x-auto scrollbar-none pb-1">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-8 gap-3">
           {giftsProducts.map((product) => (
             <ProductCard key={product.id} product={product} onNav={onNav} onAddToCart={onAddToCart} />
           ))}
@@ -424,7 +478,7 @@ export default function CustomerHome({ onNav, onAddToCart, recentOrders = [] }) 
             Explore All <ChevronRight size={13} />
           </button>
         </div>
-        <div className="flex gap-3 overflow-x-auto scrollbar-none pb-1">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-8 gap-3">
           {fashionProducts.map((product) => (
             <ProductCard key={product.id} product={product} onNav={onNav} onAddToCart={onAddToCart} />
           ))}
@@ -450,7 +504,7 @@ export default function CustomerHome({ onNav, onAddToCart, recentOrders = [] }) 
             Explore All <ChevronRight size={13} />
           </button>
         </div>
-        <div className="flex gap-3 overflow-x-auto scrollbar-none pb-1">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-8 gap-3">
           {groceryProducts.map((product) => (
             <ProductCard key={product.id} product={product} onNav={onNav} onAddToCart={onAddToCart} />
           ))}
@@ -476,7 +530,7 @@ export default function CustomerHome({ onNav, onAddToCart, recentOrders = [] }) 
             Explore All <ChevronRight size={13} />
           </button>
         </div>
-        <div className="flex gap-3 overflow-x-auto scrollbar-none pb-1">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-8 gap-3">
           {homeKitchenProducts.map((product) => (
             <ProductCard key={product.id} product={product} onNav={onNav} onAddToCart={onAddToCart} />
           ))}
@@ -502,7 +556,7 @@ export default function CustomerHome({ onNav, onAddToCart, recentOrders = [] }) 
             Explore All <ChevronRight size={13} />
           </button>
         </div>
-        <div className="flex gap-3 overflow-x-auto scrollbar-none pb-1">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-8 gap-3">
           {beautyProducts.map((product) => (
             <ProductCard key={product.id} product={product} onNav={onNav} onAddToCart={onAddToCart} />
           ))}
@@ -550,7 +604,7 @@ export default function CustomerHome({ onNav, onAddToCart, recentOrders = [] }) 
               Past Orders <ChevronRight size={13} />
             </button>
           </div>
-          <div className="flex gap-3.5 overflow-x-auto scrollbar-none pb-2">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3">
             {recentOrders.slice(0, 3).flatMap((order) =>
               order.items.slice(0, 2).map((item) => {
                 const matchedProduct = MOCK_PRODUCTS.find(
@@ -571,42 +625,40 @@ export default function CustomerHome({ onNav, onAddToCart, recentOrders = [] }) 
                   <div
                     key={`${order.id}-${item.productId || item.id}`}
                     onClick={() => onNav("product-detail", { productId: productToUse.id })}
-                    className="flex-shrink-0 w-52 p-3 rounded-2xl bg-slate-900 border border-slate-800 hover:border-cyan-500/40 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg flex flex-col justify-between group gd-tap cursor-pointer select-none"
+                    className="w-full rounded-2xl bg-slate-900 border border-slate-800 hover:border-cyan-500/40 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg flex flex-col group gd-tap cursor-pointer select-none overflow-hidden"
                   >
-                    {/* Top Row: Thumbnail + Info */}
-                    <div className="flex items-center gap-3">
-                      <div className="w-14 h-14 rounded-xl bg-slate-950 border border-slate-800 flex items-center justify-center flex-shrink-0 overflow-hidden relative">
-                        <ProductImage
-                          src={productToUse.image}
-                          alt={productToUse.name}
-                          category={productToUse.category}
-                          subcategory={productToUse.subcategory}
-                          className="w-full h-full object-cover group-hover:scale-108 transition-transform duration-300"
-                        />
-                      </div>
-                      <div className="min-w-0 flex-1">
-                        <div className="text-xs font-bold text-slate-100 truncate group-hover:text-cyan-400 transition-colors">
-                          {productToUse.name}
-                        </div>
-                        <div className="text-[10px] text-slate-400 mt-0.5 font-medium">
-                          {productToUse.unit}
-                        </div>
-                        <div className="text-xs font-black text-white mt-1">
-                          {inr(productToUse.price)}
-                        </div>
-                      </div>
+                    {/* Square Product Image */}
+                    <div className="w-full aspect-square bg-slate-950 overflow-hidden">
+                      <ProductImage
+                        src={productToUse.image}
+                        alt={productToUse.name}
+                        category={productToUse.category}
+                        subcategory={productToUse.subcategory}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                      />
                     </div>
 
-                    {/* Bottom: Reorder Button */}
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        onAddToCart(productToUse);
-                      }}
-                      className="w-full mt-3 py-1.5 rounded-xl bg-cyan-500/15 border border-cyan-500/40 text-cyan-300 hover:bg-cyan-500 hover:text-slate-950 text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-xs active:scale-98"
-                    >
-                      <RotateCcw size={11} /> Reorder
-                    </button>
+                    {/* Product Info */}
+                    <div className="px-2.5 pt-2 pb-1 flex-1">
+                      <div className="text-[11px] font-bold text-slate-100 line-clamp-2 leading-tight group-hover:text-cyan-400 transition-colors">
+                        {productToUse.name}
+                      </div>
+                      <div className="text-[10px] text-slate-400 mt-0.5">{productToUse.unit}</div>
+                      <div className="text-xs font-black text-white mt-1">{inr(productToUse.price)}</div>
+                    </div>
+
+                    {/* Reorder Button */}
+                    <div className="px-2.5 pb-2.5 pt-1">
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          onAddToCart(productToUse);
+                        }}
+                        className="w-full py-1.5 rounded-xl bg-cyan-500/15 border border-cyan-500/40 text-cyan-300 hover:bg-cyan-500 hover:text-slate-950 text-[11px] font-bold transition-all flex items-center justify-center gap-1 cursor-pointer active:scale-98"
+                      >
+                        <RotateCcw size={10} /> Reorder
+                      </button>
+                    </div>
                   </div>
                 );
               })
