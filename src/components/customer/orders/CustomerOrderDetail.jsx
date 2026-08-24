@@ -4,7 +4,7 @@ import {
   Circle, CreditCard, Receipt, RotateCcw, XCircle, Headphones,
   Download, Star, AlertTriangle, ChevronRight,
 } from "lucide-react";
-import { MOCK_ORDERS, ORDER_STATUS_LABEL, ORDER_STATUS_COLOR, PAYMENT_STATUS_COLOR, CANCEL_REASONS, RETURN_REASONS, inr } from "../CustomerConstants";
+import { MOCK_ORDERS, MOCK_PRODUCTS, ORDER_STATUS_LABEL, ORDER_STATUS_COLOR, PAYMENT_STATUS_COLOR, CANCEL_REASONS, RETURN_REASONS, inr } from "../CustomerConstants";
 import ProductImage from "../../common/ProductImage";
 
 export default function CustomerOrderDetail({ orders = [], orderId, onNav, onUpdateOrderStatus }) {
@@ -76,28 +76,35 @@ export default function CustomerOrderDetail({ orders = [], orderId, onNav, onUpd
           <Store size={14} className="text-cyan-400" />
           <span className="text-sm font-bold text-slate-200">{order.shopName}</span>
         </div>
-        <div className="divide-y divide-slate-800">
-          {order.items.map((item) => (
-            <div key={item.productId} className="flex items-center justify-between py-2">
-              <div className="flex items-center gap-2">
-                <div className="w-9 h-9 rounded-lg bg-slate-950 flex items-center justify-center flex-shrink-0 overflow-hidden relative border border-slate-800">
-                  <ProductImage
-                    src={item.image}
-                    alt={item.name}
-                    category={item.category}
-                    subcategory={item.subcategory}
-                    className="w-full h-full object-cover"
-                  />
+          {order.items.map((item) => {
+            const matchedProduct = MOCK_PRODUCTS.find(
+              (p) => p.id === item.productId || p.productId === item.productId || (p.name && item.name && p.name.toLowerCase() === item.name.toLowerCase())
+            );
+            const productImage = item.image || matchedProduct?.image;
+            const productCategory = item.category || matchedProduct?.category || "Grocery & Food";
+            const productSubcategory = item.subcategory || matchedProduct?.subcategory;
+
+            return (
+              <div key={item.productId} className="flex items-center justify-between py-2">
+                <div className="flex items-center gap-2.5">
+                  <div className="w-10 h-10 rounded-lg bg-slate-950 flex items-center justify-center flex-shrink-0 overflow-hidden relative border border-slate-800">
+                    <ProductImage
+                      src={productImage}
+                      alt={item.name}
+                      category={productCategory}
+                      subcategory={productSubcategory}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                  <div>
+                    <div className="text-sm font-semibold text-slate-200">{item.name}</div>
+                    <div className="text-[10px] text-slate-400">{item.unit} × {item.qty}</div>
+                  </div>
                 </div>
-                <div>
-                  <div className="text-sm font-semibold text-slate-200">{item.name}</div>
-                  <div className="text-[10px] text-slate-500">{item.unit} × {item.qty}</div>
-                </div>
+                <div className="text-sm font-bold text-white">{inr(item.price * item.qty)}</div>
               </div>
-              <div className="text-sm font-bold text-white">{inr(item.price * item.qty)}</div>
-            </div>
-          ))}
-        </div>
+            );
+          })}
       </div>
 
       {/* ── Price Breakdown ─────────────────────────── */}

@@ -4,7 +4,8 @@ import {
   Edit2, Plus, ShieldCheck, CreditCard, Smartphone, Wallet,
   Banknote, ArrowRight, X, ShoppingBag, Lock,
 } from "lucide-react";
-import { MOCK_ADDRESSES, MOCK_COUPONS, DELIVERY_SLOTS, inr } from "../CustomerConstants";
+import { MOCK_ADDRESSES, MOCK_COUPONS, DELIVERY_SLOTS, MOCK_PRODUCTS, INITIAL_CART, inr } from "../CustomerConstants";
+import ProductImage from "../../common/ProductImage";
 
 const PAYMENT_METHODS = [
   { id: "upi", label: "UPI", sub: "Pay via any UPI app", icon: Smartphone },
@@ -13,12 +14,7 @@ const PAYMENT_METHODS = [
   { id: "cod", label: "Cash on Delivery", sub: "Pay when your order arrives", icon: Banknote },
 ];
 
-const CART_ITEMS = [
-  { productId: "p1", name: "Toor Dal", qty: 2, price: 185, unit: "1 kg" },
-  { productId: "p4", name: "Farm Fresh Tomatoes", qty: 1, price: 45, unit: "1 kg" },
-];
-
-export default function CustomerCheckout({ onNav, onOrderPlaced }) {
+export default function CustomerCheckout({ cart = [], onNav, onOrderPlaced }) {
   const [selectedAddress, setSelectedAddress] = useState(MOCK_ADDRESSES[0].id);
   const [selectedSlot, setSelectedSlot] = useState(DELIVERY_SLOTS[0].id);
   const [appliedCoupon, setAppliedCoupon] = useState(null);
@@ -27,10 +23,12 @@ export default function CustomerCheckout({ onNav, onOrderPlaced }) {
   const [paymentMethod, setPaymentMethod] = useState("upi");
   const [placing, setPlacing] = useState(false);
 
+  const cartItems = cart && cart.length > 0 ? cart : INITIAL_CART;
+
   const address = MOCK_ADDRESSES.find((a) => a.id === selectedAddress);
   const slot = DELIVERY_SLOTS.find((s) => s.id === selectedSlot);
 
-  const subtotal = CART_ITEMS.reduce((s, i) => s + i.price * i.qty, 0);
+  const subtotal = cartItems.reduce((s, i) => s + i.price * i.qty, 0);
   const deliveryFee = subtotal >= 300 ? 0 : 25;
   const couponDiscount = appliedCoupon
     ? appliedCoupon.type === "FIXED"
@@ -227,17 +225,32 @@ export default function CustomerCheckout({ onNav, onOrderPlaced }) {
           <div className="p-5 rounded-3xl bg-slate-900 border border-slate-800 space-y-3.5 shadow-xl">
             <div className="text-sm font-bold text-slate-200">Order Summary</div>
             <div className="space-y-2 max-h-48 overflow-y-auto pr-1">
-              {CART_ITEMS.map((item) => (
-                <div key={item.productId} className="flex items-center justify-between text-sm py-1">
-                  <div className="flex items-center gap-2 min-w-0">
-                    <div className="w-7 h-7 rounded-lg bg-slate-800 flex items-center justify-center flex-shrink-0">
-                      <ShoppingBag size={12} className="text-slate-500" />
+              {cartItems.map((item) => {
+                const matchedProduct = MOCK_PRODUCTS.find(
+                  (p) => p.id === item.productId || p.productId === item.productId || (p.name && item.name && (p.name.toLowerCase().includes(item.name.toLowerCase()) || item.name.toLowerCase().includes(p.name.toLowerCase())))
+                );
+                const productImage = item.image || matchedProduct?.image || (item.name?.toLowerCase().includes("toor") ? "/products/toor-dal.png" : item.name?.toLowerCase().includes("tomato") ? "https://images.unsplash.com/photo-1592924357228-91a4daadcfea?w=600&auto=format&fit=crop&q=80" : null);
+                const productCategory = item.category || matchedProduct?.category || "Grocery & Food";
+                const productSubcategory = item.subcategory || matchedProduct?.subcategory;
+
+                return (
+                  <div key={item.productId || item.id} className="flex items-center justify-between text-sm py-1.5">
+                    <div className="flex items-center gap-2.5 min-w-0">
+                      <div className="w-10 h-10 rounded-xl bg-slate-950 border border-slate-700/50 flex items-center justify-center flex-shrink-0 overflow-hidden">
+                        <ProductImage
+                          src={productImage}
+                          alt={item.name}
+                          category={productCategory}
+                          subcategory={productSubcategory}
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
+                      <span className="text-slate-300 text-xs truncate font-medium">{item.name} × {item.qty}</span>
                     </div>
-                    <span className="text-slate-300 text-xs truncate">{item.name} × {item.qty}</span>
+                    <span className="font-bold text-slate-100 text-xs flex-shrink-0">{inr(item.price * item.qty)}</span>
                   </div>
-                  <span className="font-bold text-slate-100 text-xs flex-shrink-0">{inr(item.price * item.qty)}</span>
-                </div>
-              ))}
+                );
+              })}
             </div>
             <div className="border-t border-slate-800 pt-3 space-y-2">
               {[

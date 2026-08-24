@@ -395,6 +395,7 @@ export default function CustomerApp({
       case "checkout":
         return (
           <CustomerCheckout
+            cart={cart}
             onNav={navigate}
             onOrderPlaced={handleOrderPlaced}
           />
