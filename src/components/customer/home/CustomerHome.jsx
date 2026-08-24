@@ -484,17 +484,17 @@ export default function CustomerHome({ onNav, onAddToCart, recentOrders = [] }) 
 
       {/* ── Offers Banner ──────────────────────────── */}
       <section>
-        <div className="p-5 rounded-3xl bg-gradient-to-br from-cyan-900/40 via-slate-900 to-indigo-900/30 border border-cyan-500/30 shadow-xl">
+        <div className="p-5 rounded-3xl bg-slate-900 border border-slate-800 shadow-md hover:border-cyan-500/30 transition-all">
           <div className="flex items-center gap-4 flex-wrap sm:flex-nowrap">
-            <div className="w-12 h-12 rounded-2xl bg-cyan-500/20 border border-cyan-500/40 flex items-center justify-center flex-shrink-0 text-cyan-400">
+            <div className="w-12 h-12 rounded-2xl bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center flex-shrink-0 text-cyan-400">
               <Tag size={22} />
             </div>
             <div className="flex-1 min-w-0">
-              <div className="text-sm font-black text-white flex items-center gap-2">
+              <div className="text-sm font-black text-slate-100 flex items-center gap-2">
                 <span>Weekend Marketplace Mega Sale</span>
                 <span className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-500 text-slate-950 font-bold">20% OFF</span>
               </div>
-              <div className="text-xs text-slate-400 mt-1">Use coupon code <span className="text-cyan-300 font-mono font-bold">SAVE20</span> for 20% discount up to ₹100 on all orders</div>
+              <div className="text-xs text-slate-400 mt-1">Use coupon code <span className="text-cyan-400 font-mono font-bold">SAVE20</span> for 20% discount up to ₹100 on all orders</div>
             </div>
             <button
               onClick={() => onNav("coupons")}
