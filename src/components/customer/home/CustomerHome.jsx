@@ -535,52 +535,117 @@ export default function CustomerHome({ onNav, onAddToCart, recentOrders = [] }) 
 
       {/* ── Buy Again ──────────────────────────────── */}
       {recentOrders.length > 0 && (
-        <section>
-          <div className="flex items-center justify-between mb-3">
+        <section className="space-y-3">
+          <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <RotateCcw size={14} className="text-indigo-400" />
-              <h3 className="font-bold text-sm text-slate-100">Buy Again</h3>
+              <div className="w-7 h-7 rounded-xl bg-indigo-500/10 border border-indigo-500/30 flex items-center justify-center text-indigo-400">
+                <RotateCcw size={14} />
+              </div>
+              <div>
+                <h3 className="font-extrabold text-sm text-slate-100">Buy Again</h3>
+                <p className="text-[11px] text-slate-400">Quickly reorder from your recent purchases</p>
+              </div>
             </div>
-            <button onClick={() => onNav("orders")} className="flex items-center gap-1 text-xs text-cyan-400 font-semibold hover:text-cyan-300 transition-colors">
-              Orders <ChevronRight size={13} />
+            <button onClick={() => onNav("orders")} className="flex items-center gap-1 text-xs text-cyan-400 font-bold hover:text-cyan-300 transition-colors">
+              Past Orders <ChevronRight size={13} />
             </button>
           </div>
-          <div className="flex gap-3 overflow-x-auto scrollbar-none pb-1">
+          <div className="flex gap-3.5 overflow-x-auto scrollbar-none pb-2">
             {recentOrders.slice(0, 3).flatMap((order) =>
-              order.items.slice(0, 2).map((item) => (
-                <button
-                  key={`${order.id}-${item.productId}`}
-                  onClick={() => onNav("product-detail", { productId: item.productId })}
-                  className="flex-shrink-0 flex items-center gap-3 p-3 rounded-2xl bg-slate-900 border border-slate-800 hover:border-indigo-500/40 transition-all w-52 gd-tap cursor-pointer"
-                >
-                  <div className="w-10 h-10 rounded-xl bg-slate-800 flex items-center justify-center flex-shrink-0 overflow-hidden">
-                    <ShoppingBag size={18} className="text-slate-500" />
+              order.items.slice(0, 2).map((item) => {
+                const matchedProduct = MOCK_PRODUCTS.find(
+                  (p) => p.id === item.productId || p.productId === item.productId || p.name.toLowerCase() === item.name.toLowerCase()
+                ) || item;
+                const productToUse = {
+                  ...matchedProduct,
+                  id: matchedProduct.id || item.productId || item.id,
+                  name: item.name || matchedProduct.name,
+                  price: item.price || matchedProduct.price,
+                  unit: item.unit || matchedProduct.unit || "1 unit",
+                  image: matchedProduct.image || item.image,
+                  category: matchedProduct.category || "Grocery & Food",
+                  subcategory: matchedProduct.subcategory || "Daily Essentials",
+                };
+
+                return (
+                  <div
+                    key={`${order.id}-${item.productId || item.id}`}
+                    onClick={() => onNav("product-detail", { productId: productToUse.id })}
+                    className="flex-shrink-0 w-52 p-3 rounded-2xl bg-slate-900 border border-slate-800 hover:border-cyan-500/40 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg flex flex-col justify-between group gd-tap cursor-pointer select-none"
+                  >
+                    {/* Top Row: Thumbnail + Info */}
+                    <div className="flex items-center gap-3">
+                      <div className="w-14 h-14 rounded-xl bg-slate-950 border border-slate-800 flex items-center justify-center flex-shrink-0 overflow-hidden relative">
+                        <ProductImage
+                          src={productToUse.image}
+                          alt={productToUse.name}
+                          category={productToUse.category}
+                          subcategory={productToUse.subcategory}
+                          className="w-full h-full object-cover group-hover:scale-108 transition-transform duration-300"
+                        />
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <div className="text-xs font-bold text-slate-100 truncate group-hover:text-cyan-400 transition-colors">
+                          {productToUse.name}
+                        </div>
+                        <div className="text-[10px] text-slate-400 mt-0.5 font-medium">
+                          {productToUse.unit}
+                        </div>
+                        <div className="text-xs font-black text-white mt-1">
+                          {inr(productToUse.price)}
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Bottom: Reorder Button */}
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onAddToCart(productToUse);
+                      }}
+                      className="w-full mt-3 py-1.5 rounded-xl bg-cyan-500/15 border border-cyan-500/40 text-cyan-300 hover:bg-cyan-500 hover:text-slate-950 text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-xs active:scale-98"
+                    >
+                      <RotateCcw size={11} /> Reorder
+                    </button>
                   </div>
-                  <div className="min-w-0 text-left">
-                    <div className="text-xs font-bold text-slate-200 truncate">{item.name}</div>
-                    <div className="text-[10px] text-slate-500 mt-0.5">{inr(item.price)}</div>
-                    <div className="text-[10px] text-indigo-400 font-semibold mt-1">Reorder</div>
-                  </div>
-                </button>
-              ))
+                );
+              })
             )}
           </div>
         </section>
       )}
 
-      {/* ── Trust Strip ────────────────────────────── */}
-      <section className="grid grid-cols-3 gap-2.5">
-        {[
-          { icon: Zap, label: "15-Min", sub: "Express Delivery", color: "text-cyan-400" },
-          { icon: ShieldCheck, label: "Verified", sub: "Local Shops", color: "text-emerald-400" },
-          { icon: Tag, label: "Best", sub: "Local Prices", color: "text-amber-400" },
-        ].map(({ icon: Icon, label, sub, color }) => (
-          <div key={label} className="flex flex-col items-center gap-1.5 p-3.5 rounded-2xl bg-slate-900/60 border border-slate-800/80 text-center">
-            <Icon size={20} className={color} />
-            <div className="text-xs font-bold text-white mt-0.5">{label}</div>
-            <div className="text-[10px] text-slate-500">{sub}</div>
+      {/* ── Trust & Quality Features Banner ────────────────────────────── */}
+      <section className="p-4 sm:p-5 rounded-3xl bg-slate-900 border border-slate-800 shadow-md">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 divide-y sm:divide-y-0 sm:divide-x divide-slate-800/60">
+          <div className="flex items-center gap-3.5 sm:justify-center px-2 py-1">
+            <div className="w-11 h-11 rounded-2xl bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center text-cyan-400 flex-shrink-0 shadow-sm">
+              <Zap size={22} className="animate-pulse" />
+            </div>
+            <div>
+              <div className="text-xs font-black text-slate-100">Superfast 15–30 Mins</div>
+              <div className="text-[11px] text-slate-400">Direct doorstep delivery from local shops</div>
+            </div>
           </div>
-        ))}
+          <div className="flex items-center gap-3.5 sm:justify-center px-2 py-1 pt-3 sm:pt-1">
+            <div className="w-11 h-11 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400 flex-shrink-0 shadow-sm">
+              <ShieldCheck size={22} />
+            </div>
+            <div>
+              <div className="text-xs font-black text-slate-100">100% Verified Stores</div>
+              <div className="text-[11px] text-slate-400">Authentic local vendors & fresh stock</div>
+            </div>
+          </div>
+          <div className="flex items-center gap-3.5 sm:justify-center px-2 py-1 pt-3 sm:pt-1">
+            <div className="w-11 h-11 rounded-2xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-400 flex-shrink-0 shadow-sm">
+              <Tag size={22} />
+            </div>
+            <div>
+              <div className="text-xs font-black text-slate-100">Best Neighborhood Prices</div>
+              <div className="text-[11px] text-slate-400">Direct mandi & wholesale fair rates</div>
+            </div>
+          </div>
+        </div>
       </section>
     </div>
   );
