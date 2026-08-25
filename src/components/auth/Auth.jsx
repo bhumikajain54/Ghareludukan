@@ -41,10 +41,16 @@ export default function Auth({ onLogin }) {
     setStep("otp");
   };
 
-  const handleVerify = () => {
-    if (otp !== "1234") {
-      setError("Incorrect code — try 1234 (demo)");
-      return;
+  const handleVerify = async (codeToVerify = otp) => {
+    const enteredCode = String(codeToVerify || otp).trim();
+    if (enteredCode.length !== 6 && enteredCode !== "1234") {
+      setError("Please enter the complete 6-digit OTP.");
+      throw new Error("Please enter the complete 6-digit OTP.");
+    }
+    // Accept demo OTP codes "123456" / "1234" / "000000" or any 6-digit OTP
+    if (enteredCode !== "123456" && enteredCode !== "1234" && enteredCode !== "000000" && enteredCode.length !== 6) {
+      setError("Invalid OTP. Please enter the correct 6-digit code.");
+      throw new Error("Invalid OTP. Please enter the correct 6-digit code.");
     }
     setError("");
 
@@ -56,9 +62,13 @@ export default function Auth({ onLogin }) {
       name: "Bhumika Jain",
     };
 
+    // Give user time to see the success card state
+    await new Promise((resolve) => setTimeout(resolve, 800));
+
     if (onLogin) {
       onLogin(registered);
     }
+    return true;
   };
 
   const handleChangePhone = () => {
@@ -191,17 +201,19 @@ export default function Auth({ onLogin }) {
                 <SupportAuthCard onLogin={onLogin} />
               ) : (
                 <>
-                  <AuthBrandHeader />
                   {step === "phone" ? (
-                    <PhoneStep
-                      phone={phone}
-                      onPhoneChange={(val) => {
-                        setPhone(val);
-                        if (error) setError("");
-                      }}
-                      onSendOtp={handleSendOtp}
-                      error={error}
-                    />
+                    <>
+                      <AuthBrandHeader />
+                      <PhoneStep
+                        phone={phone}
+                        onPhoneChange={(val) => {
+                          setPhone(val);
+                          if (error) setError("");
+                        }}
+                        onSendOtp={handleSendOtp}
+                        error={error}
+                      />
+                    </>
                   ) : (
                     <OtpStep
                       phone={phone}

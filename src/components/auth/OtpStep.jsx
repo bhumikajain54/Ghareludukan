@@ -1,73 +1,206 @@
-import React from "react";
-import { AlertCircle, CheckCircle2, RefreshCw } from "lucide-react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
+import { AlertCircle } from "lucide-react";
+import OTPHeader from "./otp/OTPHeader";
+import OTPInput from "./otp/OTPInput";
+import VerifyButton from "./otp/VerifyButton";
+import ResendOTP from "./otp/ResendOTP";
+import OTPSuccess from "./otp/OTPSuccess";
+
+const INITIAL_COUNTDOWN = 30; // 30 seconds countdown timer
 
 export default function OtpStep({
   phone,
-  otp,
+  otp = "",
   onOtpChange,
   onVerify,
   onChangePhone,
-  error,
+  error: parentError = "",
 }) {
-  return (
-    <div className="space-y-3 sm:space-y-3.5">
-      {/* Header Info */}
-      <div className="text-left">
-        <h2 className="text-lg sm:text-xl font-bold text-slate-900 tracking-tight flex items-center gap-2">
-          <span>Enter Verification Code</span>
-        </h2>
-        <p className="text-[11px] sm:text-xs text-slate-500 mt-0.5">
-          Code sent to <span className="font-mono text-cyan-800 font-bold">+91 {phone}</span>
-        </p>
-      </div>
+  const [secondsLeft, setSecondsLeft] = useState(INITIAL_COUNTDOWN);
+  const [isVerifying, setIsVerifying] = useState(false);
+  const [isResending, setIsResending] = useState(false);
+  const [resendSuccess, setResendSuccess] = useState(false);
+  const [isVerified, setIsVerified] = useState(false);
+  const [localError, setLocalError] = useState("");
+  const [shake, setShake] = useState(false);
 
-      {/* OTP Input */}
-      <div>
-        <label className="block text-[11px] font-bold text-slate-700 mb-1 uppercase tracking-wider">
-          4-Digit Security Code
-        </label>
-        <input
-          type="text"
-          inputMode="numeric"
-          value={otp}
-          onChange={(e) =>
-            onOtpChange(e.target.value.replace(/\D/g, "").slice(0, 4))
+  const inputRefs = useRef([]);
+
+  const activeError = localError || parentError;
+
+  // Countdown timer effect
+  useEffect(() => {
+    if (secondsLeft <= 0) return;
+    const interval = setInterval(() => {
+      setSecondsLeft((prev) => {
+        if (prev <= 1) {
+          clearInterval(interval);
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [secondsLeft]);
+
+  // Sync parent error changes to trigger shake
+  useEffect(() => {
+    if (parentError) {
+      setShake(true);
+      const t = setTimeout(() => setShake(false), 500);
+      return () => clearTimeout(t);
+    }
+  }, [parentError]);
+
+  const triggerErrorShake = (msg) => {
+    setLocalError(msg);
+    setShake(true);
+    setTimeout(() => setShake(false), 500);
+    // Refocus the first input
+    if (inputRefs.current && inputRefs.current[0]) {
+      inputRefs.current[0].focus();
+    }
+  };
+
+  const handleOtpUpdate = (newVal) => {
+    if (localError) setLocalError("");
+    onOtpChange(newVal);
+  };
+
+  // Resend OTP handler
+  const handleResendOtp = async () => {
+    if (secondsLeft > 0 || isResending) return;
+
+    setIsResending(true);
+    setLocalError("");
+    setResendSuccess(false);
+
+    try {
+      // Simulate network request for resend OTP
+      await new Promise((resolve) => setTimeout(resolve, 400));
+
+      // Reset state
+      onOtpChange("");
+      setSecondsLeft(INITIAL_COUNTDOWN);
+      setResendSuccess(true);
+
+      // Auto focus first input
+      setTimeout(() => {
+        if (inputRefs.current && inputRefs.current[0]) {
+          inputRefs.current[0].focus();
+        }
+      }, 50);
+
+      // Hide success banner after 3 seconds
+      setTimeout(() => {
+        setResendSuccess(false);
+      }, 3000);
+    } catch (err) {
+      setLocalError("Failed to resend OTP. Please try again.");
+    } finally {
+      setIsResending(false);
+    }
+  };
+
+  // Verification handler
+  const handleVerifyOtp = useCallback(
+    async (codeToVerify = otp) => {
+      if (isVerifying || isVerified) return;
+
+      // 1. Empty / Incomplete OTP Validation
+      if (!codeToVerify || codeToVerify.length < 6) {
+        triggerErrorShake("Please enter the complete 6-digit OTP.");
+        return;
+      }
+
+      // 2. Expiration check
+      if (secondsLeft <= 0) {
+        triggerErrorShake("OTP has expired. Please request a new OTP.");
+        return;
+      }
+
+      setLocalError("");
+      setIsVerifying(true);
+
+      try {
+        // Run verify with a small async feedback delay for smooth UX
+        await new Promise((resolve) => setTimeout(resolve, 500));
+
+        let isValid = true;
+        if (onVerify) {
+          const res = await onVerify(codeToVerify);
+          // If onVerify explicitly returns false, treat as failed
+          if (res === false) {
+            isValid = false;
           }
-          placeholder="••••"
-          maxLength={4}
-          className="w-full text-center tracking-[0.8em] font-mono text-xl sm:text-2xl font-bold py-2.5 sm:py-3 px-4 rounded-xl bg-white border border-slate-200 text-slate-900 outline-none focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 transition-all placeholder-slate-300 shadow-xs"
+        }
+
+        if (isValid) {
+          setIsVerified(true);
+        }
+      } catch (err) {
+        triggerErrorShake(
+          err?.message || "Invalid OTP. Please enter the correct 6-digit code."
+        );
+      } finally {
+        setIsVerifying(false);
+      }
+    },
+    [otp, isVerifying, isVerified, secondsLeft, onVerify]
+  );
+
+  // When all 6 digits are typed, we can auto-submit or let user click
+  const handleComplete = (completedOtp) => {
+    // If completed and not expired, we can trigger verification
+    if (completedOtp.length === 6 && secondsLeft > 0) {
+      handleVerifyOtp(completedOtp);
+    }
+  };
+
+  if (isVerified) {
+    return <OTPSuccess message="Your OTP has been successfully verified." />;
+  }
+
+  return (
+    <div className="space-y-2">
+      {/* 1. Header with Logo, Title, and Masked Phone */}
+      <OTPHeader phone={phone} onChangePhone={onChangePhone} />
+
+      {/* 2. 6-Digit OTP Inputs */}
+      <div className="py-1">
+        <OTPInput
+          value={otp}
+          onChange={handleOtpUpdate}
+          onComplete={handleComplete}
+          disabled={isVerifying}
+          hasError={Boolean(activeError) && shake}
+          inputRefs={inputRefs}
         />
       </div>
 
-      {/* Error Alert */}
-      {error && (
-        <div className="flex items-center gap-2 p-2.5 rounded-xl bg-red-50 border border-red-200 text-red-600 text-xs font-medium">
-          <AlertCircle size={14} className="shrink-0" />
-          <span>{error}</span>
+      {/* 3. Error Alert Banner */}
+      {activeError && (
+        <div className="flex items-center gap-2 p-2.5 rounded-xl bg-red-50 border border-red-200 text-red-600 text-xs font-medium animate-fade-in my-2">
+          <AlertCircle size={14} className="shrink-0 text-red-500" />
+          <span>{activeError}</span>
         </div>
       )}
 
-      {/* Submit Button */}
-      <button
-        type="button"
-        onClick={onVerify}
-        className="w-full py-2.5 sm:py-3 px-5 rounded-xl bg-cyan-600 hover:bg-cyan-500 text-white font-bold text-xs sm:text-sm shadow-md shadow-cyan-600/30 flex items-center justify-center gap-2 cursor-pointer transition-all border-0"
-      >
-        <CheckCircle2 size={15} className="text-white" />
-        <span>Verify & Continue</span>
-      </button>
+      {/* 4. Verify OTP Button */}
+      <VerifyButton
+        onClick={() => handleVerifyOtp(otp)}
+        disabled={otp.length !== 6 || secondsLeft <= 0}
+        loading={isVerifying}
+      />
 
-      {/* Change Number Button */}
-      <div className="pt-0.5 text-center">
-        <button
-          type="button"
-          onClick={onChangePhone}
-          className="inline-flex items-center gap-1.5 text-xs text-slate-500 hover:text-cyan-700 transition-colors font-semibold cursor-pointer"
-        >
-          <RefreshCw size={12} />
-          <span>Change phone number</span>
-        </button>
-      </div>
+      {/* 5. Resend OTP & Expiration Timer */}
+      <ResendOTP
+        secondsLeft={secondsLeft}
+        onResend={handleResendOtp}
+        loading={isResending}
+        resendSuccess={resendSuccess}
+      />
     </div>
   );
 }

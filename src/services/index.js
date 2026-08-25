@@ -36,7 +36,7 @@ export const authService = {
   },
   async verifyOtp(phone, otp, role = "customer") {
     await delay(200);
-    if (otp === "1234") {
+    if (otp === "1234" || otp === "123456" || otp?.length === 6) {
       const user = {
         id: `usr_${Date.now()}`,
         phone,
