@@ -6,6 +6,8 @@ import SupportTickets from "./tickets/SupportTickets";
 import SupportTicketDetail from "./tickets/SupportTicketDetail";
 import SupportEscalations from "./escalations/SupportEscalations";
 import SupportReports from "./reports/SupportReports";
+import SupportProfile from "./profile/SupportProfile";
+import SupportSettings from "./profile/SupportSettings";
 import { MOCK_SUPPORT_TICKETS } from "./SupportConstants";
 
 export default function SupportApp({
@@ -147,6 +149,10 @@ export default function SupportApp({
         );
       case "reports":
         return <SupportReports onNav={navigate} />;
+      case "profile":
+        return <SupportProfile user={user} onNav={navigate} />;
+      case "settings":
+        return <SupportSettings onNav={navigate} />;
       default:
         return (
           <SupportDashboard

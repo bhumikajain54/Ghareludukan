@@ -1,5 +1,5 @@
 import React, { useState, useRef } from "react";
-import { Bell, Menu, Power, ShieldCheck, Sun, Moon } from "lucide-react";
+import { Bell, Menu, Power, ShieldCheck, Sun, Moon, User, Settings } from "lucide-react";
 
 export default function AdminHeader({
   unreadNotifs = 0,
@@ -102,33 +102,43 @@ export default function AdminHeader({
                 <div className="text-sm font-bold text-slate-100">{adminName}</div>
                 <div className="text-xs text-slate-400 mt-0.5">Platform Admin · Compliance Lead</div>
               </div>
-              {[
-                { label: "Overview Dashboard", id: "dashboard" },
-                { label: "Platform Rules & KYC", id: "settings" },
-                { label: "Immutable Audit Logs", id: "audit-logs" },
-                { label: "GMV & SLA Reports", id: "reports" },
-              ].map((item) => (
+              <div className="py-1">
                 <button
-                  key={item.id}
+                  type="button"
                   onClick={() => {
-                    onNav(item.id);
+                    onNav("profile");
                     setShowProfileMenu(false);
                   }}
-                  className="user-dropdown-item w-full text-left px-4 py-2.5 text-sm text-slate-300 hover:bg-slate-800 hover:text-white transition-colors cursor-pointer"
+                  className="user-dropdown-item w-full flex items-center gap-2.5 px-4 py-2.5 text-sm text-slate-300 hover:bg-slate-800 hover:text-white transition-colors cursor-pointer"
                 >
-                  {item.label}
+                  <User size={15} className="text-cyan-400" />
+                  <span>Profile</span>
                 </button>
-              ))}
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    onNav("settings");
+                    setShowProfileMenu(false);
+                  }}
+                  className="user-dropdown-item w-full flex items-center gap-2.5 px-4 py-2.5 text-sm text-slate-300 hover:bg-slate-800 hover:text-white transition-colors cursor-pointer"
+                >
+                  <Settings size={15} className="text-cyan-400" />
+                  <span>Settings</span>
+                </button>
+              </div>
+
               <div className="border-t border-slate-800">
                 <button
+                  type="button"
                   onClick={() => {
                     setShowProfileMenu(false);
                     onNav("_logout");
                   }}
-                  className="w-full flex items-center gap-2 px-4 py-2.5 text-sm text-red-400 hover:bg-red-500/10 transition-colors cursor-pointer"
+                  className="w-full flex items-center gap-2.5 px-4 py-2.5 text-sm text-red-400 hover:bg-red-500/10 transition-colors cursor-pointer"
                 >
-                  <Power size={14} />
-                  Logout
+                  <Power size={15} />
+                  <span>Logout</span>
                 </button>
               </div>
             </div>

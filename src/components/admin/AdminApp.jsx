@@ -13,6 +13,7 @@ import AdminOrders from "./orders/AdminOrders";
 import AdminSettlements from "./settlements/AdminSettlements";
 import AdminNotifications from "./notifications/AdminNotifications";
 import AdminSettings from "./profile/AdminSettings";
+import AdminProfile from "./profile/AdminProfile";
 import {
   MOCK_ADMIN_METRICS,
   MOCK_PENDING_SHOPS,
@@ -70,6 +71,39 @@ export default function AdminApp({
     return MOCK_AUDIT_LOGS;
   });
 
+  const [pendingDeliveryPartners, setPendingDeliveryPartners] = useState(() => {
+    try {
+      const saved = localStorage.getItem("ghareludukan_admin_delivery_partners");
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed)) return parsed;
+      }
+    } catch {}
+    return MOCK_PENDING_DELIVERY_PARTNERS;
+  });
+
+  const [fraudAlerts, setFraudAlerts] = useState(() => {
+    try {
+      const saved = localStorage.getItem("ghareludukan_admin_fraud_alerts");
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed)) return parsed;
+      }
+    } catch {}
+    return MOCK_FRAUD_ALERTS;
+  });
+
+  const [notifications, setNotifications] = useState(() => {
+    try {
+      const saved = localStorage.getItem("ghareludukan_admin_notifications");
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed)) return parsed;
+      }
+    } catch {}
+    return MOCK_ADMIN_NOTIFICATIONS;
+  });
+
   const [selectedShopId, setSelectedShopId] = useState(() => {
     try {
       return localStorage.getItem("ghareludukan_admin_selected_shop") || null;
@@ -98,6 +132,24 @@ export default function AdminApp({
       localStorage.setItem("ghareludukan_admin_approved_shops", JSON.stringify(approvedShops));
     } catch {}
   }, [approvedShops]);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem("ghareludukan_admin_delivery_partners", JSON.stringify(pendingDeliveryPartners));
+    } catch {}
+  }, [pendingDeliveryPartners]);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem("ghareludukan_admin_fraud_alerts", JSON.stringify(fraudAlerts));
+    } catch {}
+  }, [fraudAlerts]);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem("ghareludukan_admin_notifications", JSON.stringify(notifications));
+    } catch {}
+  }, [notifications]);
 
   useEffect(() => {
     try {
@@ -233,6 +285,76 @@ export default function AdminApp({
     );
   };
 
+  const handleApproveDeliveryPartner = (partnerId, reason) => {
+    const partner = pendingDeliveryPartners.find((p) => p.id === partnerId);
+    if (!partner) return;
+
+    setPendingDeliveryPartners((prev) => prev.filter((p) => p.id !== partnerId));
+
+    addAuditEntry(
+      "DELIVERY_PARTNER_KYC_APPROVED",
+      "DELIVERY_PARTNER",
+      partner.id,
+      partner.name,
+      partner.status,
+      "APPROVED",
+      reason || "Background check & Driving License verified."
+    );
+  };
+
+  const handleRejectDeliveryPartner = (partnerId, reason) => {
+    const partner = pendingDeliveryPartners.find((p) => p.id === partnerId);
+    if (!partner) return;
+
+    setPendingDeliveryPartners((prev) => prev.filter((p) => p.id !== partnerId));
+
+    addAuditEntry(
+      "DELIVERY_PARTNER_KYC_REJECTED",
+      "DELIVERY_PARTNER",
+      partner.id,
+      partner.name,
+      partner.status,
+      "REJECTED",
+      reason || "KYC documents rejected by administrator."
+    );
+  };
+
+  const handleResolveFraudAlert = (alertId, newStatus, reason) => {
+    const alertItem = fraudAlerts.find((a) => a.id === alertId);
+    if (!alertItem) return;
+
+    setFraudAlerts((prev) =>
+      prev.map((a) => (a.id === alertId ? { ...a, status: newStatus } : a))
+    );
+
+    addAuditEntry(
+      newStatus === "SUSPENDED" ? "ACCOUNT_SUSPENDED_FRAUD" : "FRAUD_ALERT_RESOLVED",
+      alertItem.targetType || "ACCOUNT",
+      alertItem.targetId || alertItem.id,
+      alertItem.targetName || alertItem.type,
+      alertItem.status,
+      newStatus,
+      reason || (newStatus === "SUSPENDED" ? "Account suspended due to policy violation" : "Alert investigated and closed")
+    );
+  };
+
+  const handleMarkNotificationRead = (notifId) => {
+    setNotifications((prev) =>
+      prev.map((n) => (n.id === notifId ? { ...n, isRead: true } : n))
+    );
+  };
+
+  const handleMarkAllNotificationsRead = () => {
+    setNotifications((prev) => prev.map((n) => ({ ...n, isRead: true })));
+  };
+
+  // Dynamic counts for Badges & Metrics
+  const activeFraudCount = fraudAlerts.filter(
+    (a) => a.status !== "SUSPENDED" && a.status !== "CLEARED"
+  ).length;
+
+  const unreadNotifs = notifications.filter((n) => !n.isRead).length;
+
   const renderView = () => {
     switch (view) {
       case "dashboard":
@@ -242,6 +364,8 @@ export default function AdminApp({
               ...MOCK_ADMIN_METRICS,
               pendingShopApprovals: pendingShops.length,
               approvedShops: approvedShops.length,
+              pendingDeliveryApprovals: pendingDeliveryPartners.length,
+              fraudAlertsCount: activeFraudCount,
             }}
             pendingShops={pendingShops}
             onNav={navigate}
@@ -277,9 +401,20 @@ export default function AdminApp({
       case "approved-shops":
         return <AdminApprovedShops shops={approvedShops} onNav={navigate} />;
       case "delivery-approvals":
-        return <AdminDeliveryApprovals onNav={navigate} />;
+        return (
+          <AdminDeliveryApprovals
+            pendingRiders={pendingDeliveryPartners}
+            onApproveRider={handleApproveDeliveryPartner}
+            onRejectRider={handleRejectDeliveryPartner}
+          />
+        );
       case "fraud-investigation":
-        return <AdminFraudDashboard onNav={navigate} />;
+        return (
+          <AdminFraudDashboard
+            fraudAlerts={fraudAlerts}
+            onResolveAlert={handleResolveFraudAlert}
+          />
+        );
       case "audit-logs":
         return <AdminAuditLogs logs={auditLogs} onNav={navigate} />;
       case "reports":
@@ -289,13 +424,29 @@ export default function AdminApp({
       case "settlements":
         return <AdminSettlements onNav={navigate} />;
       case "notifications":
-        return <AdminNotifications onNav={navigate} />;
+        return (
+          <AdminNotifications
+            notifications={notifications}
+            unreadCount={unreadNotifs}
+            onMarkAsRead={handleMarkNotificationRead}
+            onMarkAllRead={handleMarkAllNotificationsRead}
+            onNav={navigate}
+          />
+        );
+      case "profile":
+        return <AdminProfile user={user} onNav={navigate} />;
       case "settings":
         return <AdminSettings onNav={navigate} />;
       default:
         return (
           <AdminDashboard
-            metrics={MOCK_ADMIN_METRICS}
+            metrics={{
+              ...MOCK_ADMIN_METRICS,
+              pendingShopApprovals: pendingShops.length,
+              approvedShops: approvedShops.length,
+              pendingDeliveryApprovals: pendingDeliveryPartners.length,
+              fraudAlertsCount: activeFraudCount,
+            }}
             pendingShops={pendingShops}
             onNav={navigate}
             onSelectShop={(id) => {
@@ -314,10 +465,10 @@ export default function AdminApp({
         onNav={navigate}
         metrics={{
           pendingShopApprovals: pendingShops.length,
-          pendingDeliveryApprovals: 2,
-          fraudAlertsCount: 3,
+          pendingDeliveryApprovals: pendingDeliveryPartners.length,
+          fraudAlertsCount: activeFraudCount,
         }}
-        unreadNotifs={3}
+        unreadNotifs={unreadNotifs}
         onLogout={onLogout}
         isOpen={isSidebarOpen}
         onClose={() => setIsSidebarOpen(false)}
@@ -325,7 +476,8 @@ export default function AdminApp({
 
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
         <AdminHeader
-          unreadNotifs={3}
+          adminName={user?.name || "Sanjay Saxena"}
+          unreadNotifs={unreadNotifs}
           onNav={navigate}
           onOpenSidebar={() => setIsSidebarOpen(true)}
           darkMode={darkMode}

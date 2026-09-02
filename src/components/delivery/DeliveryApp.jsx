@@ -8,6 +8,7 @@ import DeliveryEarnings from "./earnings/DeliveryEarnings";
 import DeliveryPerformance from "./earnings/DeliveryPerformance";
 import DeliveryNotifications from "./notifications/DeliveryNotifications";
 import DeliveryProfile from "./profile/DeliveryProfile";
+import DeliverySettings from "./profile/DeliverySettings";
 import DeliverySupport from "./support/DeliverySupport";
 import {
   MOCK_DELIVERY_RIDER,
@@ -194,6 +195,8 @@ export default function DeliveryApp({
         );
       case "profile":
         return <DeliveryProfile rider={MOCK_DELIVERY_RIDER} onNav={navigate} />;
+      case "settings":
+        return <DeliverySettings rider={MOCK_DELIVERY_RIDER} onNav={navigate} />;
       case "support":
         return <DeliverySupport onNav={navigate} />;
       default:
